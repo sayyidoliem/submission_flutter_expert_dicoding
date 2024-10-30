@@ -1,0 +1,20 @@
+{
+  "results": [
+    {
+      "adult": false,
+      "backdrop_path": "/3HvXeJzSztADlAua3l4gjawVhPC.jpg",
+      "genre_ids": [16, 35],
+      "id": 69367,
+      "origin_country": ["JP"],
+      "original_language": "ja",
+      "original_name": "冴えない彼女の育てかた",
+      "overview": "Tomoya Aki is an otaku who has a dream...",
+      "popularity": 63.749,
+      "poster_path": "/GP7I1yKTp6giJz2fdy0LBWo4zV.jpg",
+      "first_air_date": "2015-01-16",
+      "name": "Saekano: How to Raise a Boring Girlfriend",
+      "vote_average": 6.7,
+      "vote_count": 68
+    }
+  ]
+}

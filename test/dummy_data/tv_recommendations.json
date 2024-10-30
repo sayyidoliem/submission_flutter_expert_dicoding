@@ -1,0 +1,24 @@
+{
+  "page": 1,
+  "results": [
+    {
+      "backdrop_path": "/path.jpg",
+      "id": 1,
+      "name": "name",
+      "original_name": "original name",
+      "overview": "overview",
+      "poster_path": "/path.jpg",
+      "media_type": "tv",
+      "adult": false,
+      "original_language": "original language",
+      "genre_ids": [1, 2, 3],
+      "popularity": 1.0,
+      "first_air_date": "2011-01-11",
+      "vote_average": 1.0,
+      "vote_count": 1,
+      "origin_country": ["JP"]
+    }
+  ],
+  "total_pages": 2,
+  "total_results": 40
+}
