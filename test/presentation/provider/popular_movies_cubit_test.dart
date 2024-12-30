@@ -1,3 +1,4 @@
+import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:ditonton/common/failure.dart';
 import 'package:ditonton/feature/movie/domain/entities/movie.dart';
@@ -16,7 +17,7 @@ void main() {
 
   setUp(() {
     mockGetPopularMovies = MockGetPopularMovies();
-    cubit = PopularMoviesCubit( mockGetPopularMovies);
+    cubit = PopularMoviesCubit(mockGetPopularMovies);
   });
 
   final tMovie = Movie(
@@ -37,33 +38,25 @@ void main() {
 
   final tMovieList = <Movie>[tMovie];
 
-  test('should change state to loading when usecase is called', () async {
-    // arrange
-    when(mockGetPopularMovies.execute())
-        .thenAnswer((_) async => Right(tMovieList));
-    // act
-    await cubit.fetchPopularMovies();
-    // assert
-    expect(cubit.state, PopularMoviesLoading());
-  });
+  group('PopularMoviesCubit', () {
+    blocTest<PopularMoviesCubit, PopularMoviesState>(
+      'should emit [PopularMoviesLoading, PopularMoviesLoaded] when data is gotten successfully',
+      build: () {
+        when(mockGetPopularMovies.execute()).thenAnswer((_) async => Right(tMovieList));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchPopularMovies(),
+      expect: () => [PopularMoviesLoading(), PopularMoviesLoaded(tMovieList)],
+    );
 
-  test('should change movies data when data is gotten successfully', () async {
-    // arrange
-    when(mockGetPopularMovies.execute())
-        .thenAnswer((_) async => Right(tMovieList));
-    // act
-    await cubit.fetchPopularMovies();
-    // assert
-    expect(cubit.state, PopularMoviesLoaded(tMovieList));
-  });
-
-  test('should return error when data is unsuccessful', () async {
-    // arrange
-    when(mockGetPopularMovies.execute())
-        .thenAnswer((_) async => Left(ServerFailure('Server Failure')));
-    // act
-    await cubit.fetchPopularMovies();
-    // assert
-    expect(cubit.state, PopularMoviesError('Server Failure'));
+    blocTest<PopularMoviesCubit, PopularMoviesState>(
+      'should emit [PopularMoviesLoading, PopularMoviesError] when getting data fails',
+      build: () {
+        when(mockGetPopularMovies.execute()).thenAnswer((_) async => Left(ServerFailure('Server Failure')));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchPopularMovies(),
+      expect: () => [PopularMoviesLoading(), PopularMoviesError('Server Failure')],
+    );
   });
 }

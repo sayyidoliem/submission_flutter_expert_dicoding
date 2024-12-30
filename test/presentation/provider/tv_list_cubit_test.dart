@@ -51,23 +51,18 @@ void main() {
       expect(cubit.state, TvListInitial());
     });
 
-    test(
-        'should emit [TvListLoading, TvListLoaded] when data is fetched successfully',
-        () async {
+    test('should emit [TvListLoading, TvListLoaded] when data is fetched successfully', () async {
       // arrange
-      when(mockGetNowPlayingTvs.execute())
-          .thenAnswer((_) async => Right(tTvList));
+      when(mockGetNowPlayingTvs.execute()).thenAnswer((_) async => Right(tTvList));
       // act
       await cubit.fetchNowPlayingTvs();
       // assert
       expect(cubit.state, TvList(tTvList));
     });
 
-    test('should emit [TvListLoading, TvListError] when fetching data fails',
-        () async {
+    test('should emit [TvListLoading, TvListError] when fetching data fails', () async {
       // arrange
-      when(mockGetNowPlayingTvs.execute())
-          .thenAnswer((_) async => Left(ServerFailure('Server Failure')));
+      when(mockGetNowPlayingTvs.execute()).thenAnswer((_) async => Left(ServerFailure('Server Failure')));
       // act
       await cubit.fetchNowPlayingTvs();
       // assert
@@ -76,9 +71,7 @@ void main() {
   });
 
   group('Popular TV Shows', () {
-    test(
-        'should emit [TvListLoading, TvListLoaded] when data is fetched successfully',
-        () async {
+    test('should emit [TvListLoading, TvListLoaded] when data is fetched successfully', () async {
       // arrange
       when(mockGetPopularTvs.execute()).thenAnswer((_) async => Right(tTvList));
       // act
@@ -87,11 +80,9 @@ void main() {
       expect(cubit.state, TvList(tTvList));
     });
 
-    test('should emit [TvListLoading, TvListError] when fetching data fails',
-        () async {
+    test('should emit [TvListLoading, TvListError] when fetching data fails', () async {
       // arrange
-      when(mockGetPopularTvs.execute())
-          .thenAnswer((_) async => Left(ServerFailure('Server Failure')));
+      when(mockGetPopularTvs.execute()).thenAnswer((_) async => Left(ServerFailure('Server Failure')));
       // act
       await cubit.fetchPopularTvs();
       // assert
@@ -100,23 +91,18 @@ void main() {
   });
 
   group('Top Rated TV Shows', () {
-    test(
-        'should emit [TvListLoading, TvListLoaded] when data is fetched successfully',
-        () async {
+    test('should emit [TvListLoading, TvListLoaded] when data is fetched successfully', () async {
       // arrange
-      when(mockGetTopRatedTvs.execute())
-          .thenAnswer((_) async => Right(tTvList));
+      when(mockGetTopRatedTvs.execute()).thenAnswer((_) async => Right(tTvList));
       // act
       await cubit.fetchTopRatedTvs();
       // assert
       expect(cubit.state, TvList(tTvList));
     });
 
-    test('should emit [TvListLoading, TvListError] when fetching data fails',
-        () async {
+    test('should emit [TvListLoading, TvListError] when fetching data fails', () async {
       // arrange
-      when(mockGetTopRatedTvs.execute())
-          .thenAnswer((_) async => Left(ServerFailure('Server Failure')));
+      when(mockGetTopRatedTvs.execute()).thenAnswer((_) async => Left(ServerFailure('Server Failure')));
       // act
       await cubit.fetchTopRatedTvs();
       // assert

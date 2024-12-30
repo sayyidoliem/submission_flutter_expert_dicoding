@@ -12,15 +12,12 @@ class MovieSearchCubit extends Cubit<MovieSearchState> {
 
   Future<void> fetchMovieSearch(String query) async {
     emit(MovieSearchLoading());
-
+    
     final result = await searchMovies.execute(query);
     result.fold(
-      (failure) {
-        emit(MovieSearchError(failure.message));
-      },
-      (data) {
-        emit(MovieSearchLoaded(data));
-      },
+      (failure) => emit(MovieSearchError(failure.message)),
+      (movies) => emit(MovieSearchLoaded(movies)),
     );
   }
 }
+

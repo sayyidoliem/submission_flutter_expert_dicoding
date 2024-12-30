@@ -1,3 +1,4 @@
+import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:ditonton/common/failure.dart';
 import 'package:ditonton/feature/tv/domain/entities/tv.dart';
@@ -36,31 +37,25 @@ void main() {
 
   final tTvList = <Tv>[tTv];
 
-  test('should change state to loading when usecase is called', () async {
-    // arrange
-    when(mockGetTopRatedTvs.execute()).thenAnswer((_) async => Right(tTvList));
-    // act
-    await cubit.fetchTopRatedTvs();
-    // assert
-    expect(cubit.state, isA<TopRatedTvsLoading>());
-  });
+  group('TopRatedTvsCubit', () {
+    blocTest<TopRatedTvsCubit, TopRatedTvsState>(
+      'should emit [TopRatedTvsLoading, TopRatedTvsLoaded] when data is gotten successfully',
+      build: () {
+        when(mockGetTopRatedTvs.execute()).thenAnswer((_) async => Right(tTvList));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchTopRatedTvs(),
+      expect: () => [TopRatedTvsLoading(), TopRatedTvsLoaded(tTvList)],
+    );
 
-  test('should change tvs data when data is gotten successfully', () async {
-    // arrange
-    when(mockGetTopRatedTvs.execute()).thenAnswer((_) async => Right(tTvList));
-    // act
-    await cubit.fetchTopRatedTvs();
-    // assert
-    expect(cubit.state, TopRatedTvsLoaded(tTvList));
-  });
-
-  test('should return error when data is unsuccessful', () async {
-    // arrange
-    when(mockGetTopRatedTvs.execute())
-        .thenAnswer((_) async => Left(ServerFailure('Server Failure')));
-    // act
-    await cubit.fetchTopRatedTvs();
-    // assert
-    expect(cubit.state, TopRatedTvsError('Server Failure'));
+    blocTest<TopRatedTvsCubit, TopRatedTvsState>(
+      'should emit [TopRatedTvsLoading, TopRatedTvsError] when getting data fails',
+      build: () {
+        when(mockGetTopRatedTvs.execute()).thenAnswer((_) async => Left(ServerFailure('Server Failure')));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchTopRatedTvs(),
+      expect: () => [TopRatedTvsLoading(), TopRatedTvsError('Server Failure')],
+    );
   });
 }

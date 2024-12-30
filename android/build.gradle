@@ -16,3 +16,19 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+buildscript {
+ 
+  repositories {
+    // Periksa apakah sudah menyertakan Maven Google atau tidak.
+    google()  // Google's Maven repository
+  }
+ 
+  dependencies {
+    // ...
+ 
+    // Tambahkan baris di bawah ini.
+    classpath 'com.google.gms:google-services:4.3.13'  // Google Services plugin
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.1'
+  }
+}

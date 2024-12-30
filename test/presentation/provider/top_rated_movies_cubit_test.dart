@@ -1,3 +1,4 @@
+import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:ditonton/common/failure.dart';
 import 'package:ditonton/feature/movie/domain/entities/movie.dart';
@@ -37,33 +38,25 @@ void main() {
 
   final tMovieList = <Movie>[tMovie];
 
-  test('should change state to loading when usecase is called', () async {
-    // arrange
-    when(mockGetTopRatedMovies.execute())
-        .thenAnswer((_) async => Right(tMovieList));
-    // act
-    await cubit.fetchTopRatedMovies();
-    // assert
-    expect(cubit.state, isA<TopRatedMoviesLoading>());
-  });
+  group('TopRatedMoviesCubit', () {
+    blocTest<TopRatedMoviesCubit, TopRatedMoviesState>(
+      'should emit [TopRatedMoviesLoading, TopRatedMoviesLoaded] when data is gotten successfully',
+      build: () {
+        when(mockGetTopRatedMovies.execute()).thenAnswer((_) async => Right(tMovieList));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchTopRatedMovies(),
+      expect: () => [TopRatedMoviesLoading(), TopRatedMoviesLoaded(tMovieList)],
+    );
 
-  test('should change movies data when data is gotten successfully', () async {
-    // arrange
-    when(mockGetTopRatedMovies.execute())
-        .thenAnswer((_) async => Right(tMovieList));
-    // act
-    await cubit.fetchTopRatedMovies();
-    // assert
-    expect(cubit.state, TopRatedMoviesLoaded(tMovieList));
-  });
-
-  test('should return error when data is unsuccessful', () async {
-    // arrange
-    when(mockGetTopRatedMovies.execute())
-        .thenAnswer((_) async => Left(ServerFailure('Server Failure')));
-    // act
-    await cubit.fetchTopRatedMovies();
-    // assert
-    expect(cubit.state, TopRatedMoviesError('Server Failure'));
+    blocTest<TopRatedMoviesCubit, TopRatedMoviesState>(
+      'should emit [TopRatedMoviesLoading, TopRatedMoviesError] when getting data fails',
+      build: () {
+        when(mockGetTopRatedMovies.execute()).thenAnswer((_) async => Left(ServerFailure('Server Failure')));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchTopRatedMovies(),
+      expect: () => [TopRatedMoviesLoading(), TopRatedMoviesError('Server Failure')],
+    );
   });
 }

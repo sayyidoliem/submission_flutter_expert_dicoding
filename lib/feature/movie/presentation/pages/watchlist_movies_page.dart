@@ -1,6 +1,6 @@
-import 'package:ditonton/common/utils.dart';
 import 'package:ditonton/feature/movie/presentation/provider/watchlist_movie_cubit/watchlist_movie_cubit.dart';
 import 'package:ditonton/feature/movie/presentation/widgets/movie_card_list.dart';
+import 'package:ditonton/utils/route_observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

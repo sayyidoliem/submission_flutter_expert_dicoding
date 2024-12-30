@@ -10,6 +10,7 @@ import 'package:ditonton/feature/movie/presentation/provider/movie_detail_cubit/
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:bloc_test/bloc_test.dart';
 
 import '../../dummy_data/dummy_objects.dart';
 import 'movie_detail_cubit_test.mocks.dart';
@@ -70,108 +71,145 @@ void main() {
   }
 
   group('Get Movie Detail', () {
-    test('should get data from the usecase', () async {
-      // arrange
-      _arrangeUsecase();
-      // act
-      await cubit.fetchMovieDetail(tId);
-      // assert
-      verify(mockGetMovieDetail.execute(tId));
-      verify(mockGetMovieRecommendations.execute(tId));
-    });
+    blocTest<MovieDetailCubit, MovieDetailState>(
+      'should get data from the usecase',
+      build: () {
+        _arrangeUsecase();
+        // Stub the getWatchlistStatus to avoid MissingStubError
+        when(mockGetWatchlistStatus.execute(tId)).thenAnswer((_) async => false);
+        return cubit;
+      },
+      act: (cubit) => cubit.fetchMovieDetail(tId),
+      verify: (_) {
+        verify(mockGetMovieDetail.execute(tId));
+        verify(mockGetMovieRecommendations.execute(tId));
+      },
+    );
 
-    test('should emit Loading and then Loaded states when usecase is called', () {
-      // arrange
-      _arrangeUsecase();
-      // act
-      cubit.fetchMovieDetail(tId);
-      // assert
-      expectLater(cubit.stream, emitsInOrder([isA<MovieDetailLoading>(), isA<MovieDetailLoaded>()]));
-    });
+    blocTest<MovieDetailCubit, MovieDetailState>(
+      'should emit Loading and then Loaded states when usecase is called',
+      build: () {
+        _arrangeUsecase();
+        // Stub the getWatchlistStatus to avoid MissingStubError
+        when(mockGetWatchlistStatus.execute(tId)).thenAnswer((_) async => false);
+        return cubit;
+      },
+      act: (cubit) => cubit.fetchMovieDetail(tId),
+      expect: () => [
+        isA<MovieDetailLoading>(),
+        isA<MovieDetailLoaded>(),
+      ],
+    );
 
-    test('should change movie when data is gotten successfully', () async {
-      // arrange
-      _arrangeUsecase();
-      // act
-      await cubit.fetchMovieDetail(tId);
-      // assert
-      expect(cubit.state, isA<MovieDetailLoaded>());
-      expect((cubit.state as MovieDetailLoaded).movie, testMovieDetail);
-    });
+    blocTest<MovieDetailCubit, MovieDetailState>(
+      'should change movie when data is gotten successfully',
+      build: () {
+        _arrangeUsecase();
+        // Stub the getWatchlistStatus to avoid MissingStubError
+        when(mockGetWatchlistStatus.execute(tId)).thenAnswer((_) async => false);
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchMovieDetail(tId),
+      expect: () => [
+        isA<MovieDetailLoading>(),
+        isA<MovieDetailLoaded>().having((state) => (state as MovieDetailLoaded).movie, 'movie', testMovieDetail),
+      ],
+    );
 
-    test('should change recommendation movies when data is gotten successfully', () async {
-      // arrange
-      _arrangeUsecase();
-      // act
-      await cubit.fetchMovieDetail(tId);
-      // assert
-      expect(cubit.state, isA<MovieDetailLoaded>());
-      expect((cubit.state as MovieDetailLoaded).recommendations, tMovies);
-    });
+    blocTest<MovieDetailCubit, MovieDetailState>(
+      'should change recommendation movies when data is gotten successfully',
+      build: () {
+        _arrangeUsecase();
+        // Stub the getWatchlistStatus to avoid MissingStubError
+        when(mockGetWatchlistStatus.execute(tId)).thenAnswer((_) async => false);
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchMovieDetail(tId),
+      expect: () => [
+        isA<MovieDetailLoading>(),
+        isA<MovieDetailLoaded>().having((state) => (state as MovieDetailLoaded).recommendations, 'recommendations', tMovies),
+      ],
+    );
   });
 
   group('Watchlist', () {
-    test('should get the watchlist status', () async {
-      // arrange
-      when(mockGetWatchlistStatus.execute(1)).thenAnswer((_) async => true);
-      // act
-      await cubit.loadWatchlistStatus(1);
-      // assert
-      expect(cubit.getWatchListStatus, true);
-    });
+    blocTest<MovieDetailCubit, MovieDetailState>(
+      'should get the watchlist status',
+      build: () {
+        when(mockGetWatchlistStatus.execute(1)).thenAnswer((_) async => true);
+        return cubit;
+      },
+      act: (cubit) async => await cubit.loadWatchlistStatus(1),
+      expect: () => [],
+      verify: (_) {
+        expect(cubit.getWatchListStatus, true);
+      },
+    );
 
-    test('should execute save watchlist when function called', () async {
-      // arrange
-      when(mockSaveWatchlist.execute(testMovieDetail)).thenAnswer((_) async => Right('Success'));
-      when(mockGetWatchlistStatus.execute(testMovieDetail.id)).thenAnswer((_) async => true);
-      // act
-      await cubit.addWatchlist(testMovieDetail);
-      // assert
-      verify(mockSaveWatchlist.execute(testMovieDetail));
-    });
+    blocTest<MovieDetailCubit, MovieDetailState>(
+      'should execute save watchlist when function called',
+      build: () {
+        when(mockSaveWatchlist.execute(testMovieDetail)).thenAnswer((_) async => Right('Success'));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.addWatchlist(testMovieDetail),
+      verify: (_) {
+        verify(mockSaveWatchlist.execute(testMovieDetail));
+      },
+    );
 
-    test('should execute remove watchlist when function called', () async {
-      // arrange
-      when(mockRemoveWatchlist.execute(testMovieDetail)).thenAnswer((_) async => Right('Removed'));
-      when(mockGetWatchlistStatus.execute(testMovieDetail.id)).thenAnswer((_) async => false);
-      // act
-      await cubit.removeFromWatchlist(testMovieDetail);
-      // assert
-      verify(mockRemoveWatchlist.execute(testMovieDetail));
-    });
+    blocTest<MovieDetailCubit, MovieDetailState>(
+      'should execute remove watchlist when function called',
+      build: () {
+        when(mockRemoveWatchlist.execute(testMovieDetail)).thenAnswer((_) async => Right('Removed'));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.removeFromWatchlist(testMovieDetail),
+      verify: (_) {
+        verify(mockRemoveWatchlist.execute(testMovieDetail));
+      },
+    );
 
-    test('should update watchlist status when add watchlist success', () async {
-      // arrange
-      when(mockSaveWatchlist.execute(testMovieDetail)).thenAnswer((_) async => Right('Added to Watchlist'));
-      when(mockGetWatchlistStatus.execute(testMovieDetail.id)).thenAnswer((_) async => true);
-      // act
-      await cubit.addWatchlist(testMovieDetail);
-      // assert
-      expect(cubit.getWatchListStatus, true);
-      expect(cubit.getWatchListStatus, 'Added to Watchlist');
-    });
+    blocTest<MovieDetailCubit, MovieDetailState>(
+      'should update watchlist status when add watchlist success',
+      build: () {
+        when(mockSaveWatchlist.execute(testMovieDetail)).thenAnswer((_) async => Right('Added to Watchlist'));
+        when(mockGetWatchlistStatus.execute(testMovieDetail.id)).thenAnswer((_) async => true);
+        return cubit;
+      },
+      act: (cubit) async => await cubit.addWatchlist(testMovieDetail),
+      expect: () => [
+        isA<MovieDetailLoaded>().having((state) => state.isAddedToWatchlist, 'getWatchListStatus', true),
+      ],
+    );
 
-    test('should update watchlist message when add watchlist failed', () async {
-      // arrange
-      when(mockSaveWatchlist.execute(testMovieDetail)).thenAnswer((_) async => Left(DatabaseFailure('Failed')));
-      when(mockGetWatchlistStatus.execute(testMovieDetail.id)).thenAnswer((_) async => false);
-      // act
-      await cubit.addWatchlist(testMovieDetail);
-      // assert
-      expect(cubit.getWatchListStatus, 'Failed');
-    });
+    blocTest<MovieDetailCubit, MovieDetailState>(
+      'should update watchlist message when add watchlist failed',
+      build: () {
+        when(mockSaveWatchlist.execute(testMovieDetail)).thenAnswer((_) async => Left(DatabaseFailure('Failed')));
+        when(mockGetWatchlistStatus.execute(testMovieDetail.id)).thenAnswer((_) async => false);
+        return cubit;
+      },
+      act: (cubit) async => await cubit.addWatchlist(testMovieDetail),
+      expect: () => [
+        isA<MovieDetailError>().having((state) => (state as MovieDetailError).message, 'message', 'Failed'),
+      ],
+    );
   });
 
   group('on Error', () {
-    test('should return error when data is unsuccessful', () async {
-      // arrange
-      when(mockGetMovieDetail.execute(tId)).thenAnswer((_) async => Left(ServerFailure('Server Failure')));
-      when(mockGetMovieRecommendations.execute(tId)).thenAnswer((_) async => Right(tMovies));
-      // act
-      await cubit.fetchMovieDetail(tId);
-      // assert
-      expect(cubit.state, isA<MovieDetailError>());
-      expect((cubit.state as MovieDetailError).message, 'Server Failure');
-    });
+    blocTest<MovieDetailCubit, MovieDetailState>(
+      'should return error when data is unsuccessful',
+      build: () {
+        when(mockGetMovieDetail.execute(tId)).thenAnswer((_) async => Left(ServerFailure('Server Failure')));
+        when(mockGetMovieRecommendations.execute(tId)).thenAnswer((_) async => Right(tMovies));
+        when(mockGetWatchlistStatus.execute(tId)).thenAnswer((_) async => false);
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchMovieDetail(tId),
+      expect: () => [
+        isA<MovieDetailError>().having((state) => (state as MovieDetailError).message, 'message', 'Server Failure'),
+      ],
+    );
   });
 }

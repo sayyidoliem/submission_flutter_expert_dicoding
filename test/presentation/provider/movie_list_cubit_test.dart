@@ -1,3 +1,4 @@
+import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:ditonton/feature/movie/domain/entities/movie.dart';
 import 'package:ditonton/feature/movie/domain/usecases/get_now_playing_movies.dart';
@@ -48,102 +49,86 @@ void main() {
   final tMovieList = <Movie>[tMovie];
 
   group('Now Playing Movies', () {
-    test('initialState should be Empty', () {
-      expect(cubit.state, MovieListInitial());
-    });
+    blocTest<MovieListCubit, MovieListState>(
+      'initialState should be Empty',
+      build: () => cubit,
+      expect: () => [],
+    );
 
-    test('should get data from the usecase', () async {
-      // arrange
-      when(mockGetNowPlayingMovies.execute()).thenAnswer((_) async => Right(tMovieList));
-      // act
-      await cubit.fetchNowPlayingMovies();
-      // assert
-      verify(mockGetNowPlayingMovies.execute());
-    });
+    blocTest<MovieListCubit, MovieListState>(
+      'should get data from the usecase',
+      build: () {
+        when(mockGetNowPlayingMovies.execute()).thenAnswer((_) async => Right(tMovieList));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchNowPlayingMovies(),
+      verify: (cubit) {
+        verify(mockGetNowPlayingMovies.execute());
+      },
+    );
 
-    test('should change state to Loading when usecase is called', () async {
-      // arrange
-      when(mockGetNowPlayingMovies.execute()).thenAnswer((_) async => Right(tMovieList));
-      // act
-      await cubit.fetchNowPlayingMovies();
-      // assert
-      expect(cubit.state, MovieListLoading());
-    });
+    blocTest<MovieListCubit, MovieListState>(
+      'should change state to Loading when usecase is called',
+      build: () {
+        when(mockGetNowPlayingMovies.execute()).thenAnswer((_) async => Right(tMovieList));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchNowPlayingMovies(),
+      expect: () => [MovieListLoading(), MovieListLoaded(tMovieList)],
+    );
 
-    test('should change movies when data is gotten successfully', () async {
-      // arrange
-      when(mockGetNowPlayingMovies.execute()).thenAnswer((_) async => Right(tMovieList));
-      // act
-      await cubit.fetchNowPlayingMovies();
-      // assert
-      expect(cubit.state, MovieListLoaded(tMovieList));
-    });
-
-    test('should return error when data is unsuccessful', () async {
-      // arrange
-      when(mockGetNowPlayingMovies.execute()).thenAnswer((_) async => Left(ServerFailure('Server Failure')));
-      // act
-      await cubit.fetchNowPlayingMovies();
-      // assert
-      expect(cubit.state, MovieListError('Server Failure'));
-    });
+    blocTest<MovieListCubit, MovieListState>(
+      'should return error when data is unsuccessful',
+      build: () {
+        when(mockGetNowPlayingMovies.execute()).thenAnswer((_) async => Left(ServerFailure('Server Failure')));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchNowPlayingMovies(),
+      expect: () => [MovieListLoading(), MovieListError('Server Failure')],
+    );
   });
 
   group('Popular Movies', () {
-    test('should change state to loading when usecase is called', () async {
-      // arrange
-      when(mockGetPopularMovies.execute()).thenAnswer((_) async => Right(tMovieList));
-      // act
-      await cubit.fetchPopularMovies();
-      // assert
-      expect(cubit.state, MovieListLoading());
-    });
+    blocTest<MovieListCubit, MovieListState>(
+      'should change state to Loading when usecase is called',
+      build: () {
+        when(mockGetPopularMovies.execute()).thenAnswer((_) async => Right(tMovieList));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchPopularMovies(),
+      expect: () => [MovieListLoading(), MovieListLoaded(tMovieList)],
+    );
 
-    test('should change movies data when data is gotten successfully', () async {
-      // arrange
-      when(mockGetPopularMovies.execute()).thenAnswer((_) async => Right(tMovieList));
-      // act
-      await cubit.fetchPopularMovies();
-      // assert
-      expect(cubit.state, MovieListLoaded(tMovieList));
-    });
-
-    test('should return error when data is unsuccessful', () async {
-      // arrange
-      when(mockGetPopularMovies.execute()).thenAnswer((_) async => Left(ServerFailure('Server Failure')));
-      // act
-      await cubit.fetchPopularMovies();
-      // assert
-      expect(cubit.state, MovieListError('Server Failure'));
-    });
+    blocTest<MovieListCubit, MovieListState>(
+      'should return error when data is unsuccessful',
+      build: () {
+        when(mockGetPopularMovies.execute()).thenAnswer((_) async => Left(ServerFailure('Server Failure')));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchPopularMovies(),
+      expect: () => [MovieListLoading(), MovieListError('Server Failure')],
+    );
   });
 
   group('Top Rated Movies', () {
-    test('should change state to loading when usecase is called', () async {
-      // arrange
-      when(mockGetTopRatedMovies.execute()).thenAnswer((_) async => Right(tMovieList));
-      // act
-      await cubit.fetchTopRatedMovies();
-      // assert
-      expect(cubit.state, MovieListLoading());
-    });
+    blocTest<MovieListCubit, MovieListState>(
+      'should change state to Loading when usecase is called',
+      build: () {
+        when(mockGetTopRatedMovies.execute()).thenAnswer((_) async => Right(tMovieList));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchTopRatedMovies(),
+      expect: () => [MovieListLoading(), MovieListLoaded(tMovieList)],
+    );
 
-    test('should change movies data when data is gotten successfully', () async {
-      // arrange
-      when(mockGetTopRatedMovies.execute()).thenAnswer((_) async => Right(tMovieList));
-      // act
-      await cubit.fetchTopRatedMovies();
-      // assert
-      expect(cubit.state, MovieListLoaded(tMovieList));
-    });
-
-    test('should return error when data is unsuccessful', () async {
-      // arrange
-      when(mockGetTopRatedMovies.execute()).thenAnswer((_) async => Left(ServerFailure('Server Failure')));
-      // act
-      await cubit.fetchTopRatedMovies();
-      // assert
-      expect(cubit.state, MovieListError('Server Failure'));
-    });
+    blocTest<MovieListCubit, MovieListState>(
+      'should return error when data is unsuccessful',
+      build: () {
+        when(mockGetTopRatedMovies.execute()).thenAnswer((_) async => Left(ServerFailure('Server Failure')));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchTopRatedMovies(),
+      expect: () => [MovieListLoading(), MovieListError('Server Failure')],
+    );
   });
 }
