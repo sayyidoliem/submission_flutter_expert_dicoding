@@ -18,11 +18,11 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late MovieRemoteDataSourceImpl dataSource;
-  late MockHttpClient mockHttpClient;
+  late MockSSLCertifiedClient mockHttpClient;
 
   setUp(() {
-    mockHttpClient = MockHttpClient();
-    dataSource = MovieRemoteDataSourceImpl();
+    mockHttpClient = MockSSLCertifiedClient();
+    dataSource = MovieRemoteDataSourceImpl(client: mockHttpClient);
   });
 
   group('get Now Playing Movies', () {

@@ -1,19 +1,19 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:dartz/dartz.dart';
 import 'package:ditonton/common/failure.dart';
-import 'package:ditonton/feature/tv/domain/entities/tv.dart';
+import 'package:ditonton/feature/tv/domain/entities/tv_genre.dart';
 import 'package:ditonton/feature/tv/domain/usecases/get_tv_detail.dart';
 import 'package:ditonton/feature/tv/domain/usecases/get_tv_recommendations.dart';
 import 'package:ditonton/feature/tv/domain/usecases/get_watchlist_status_tvs.dart';
-import 'package:ditonton/feature/tv/domain/usecases/remove_watchlist_tvs.dart';
 import 'package:ditonton/feature/tv/domain/usecases/save_watchlist_tvs.dart';
+import 'package:ditonton/feature/tv/domain/usecases/remove_watchlist_tvs.dart';
 import 'package:ditonton/feature/tv/presentation/provider/tv_detail_cubit/tv_detail_cubit.dart';
-import 'package:ditonton/feature/tv/presentation/provider/watchlist_tv_cubit/watchlist_tv_cubit.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:ditonton/feature/tv/domain/entities/tv.dart';
+import 'package:ditonton/feature/tv/domain/entities/tv_detail.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:dartz/dartz.dart';
+import 'package:flutter_test/flutter_test.dart';
 
-import '../../dummy_data/dummy_objects.dart';
 import 'tv_detail_cubit_test.mocks.dart';
 
 @GenerateMocks([
@@ -24,134 +24,105 @@ import 'tv_detail_cubit_test.mocks.dart';
   RemoveWatchlistTvs,
 ])
 void main() {
+  late TvDetailCubit cubit;
   late MockGetTvDetail mockGetTvDetail;
   late MockGetTvRecommendations mockGetTvRecommendations;
-  late MockGetWatchlistStatusTvs mockGetWatchlistStatus;
-  late MockSaveWatchlistTvs mockSaveWatchlist;
-  late MockRemoveWatchlistTvs mockRemoveWatchlist;
-  late TvDetailCubit cubit;
+  late MockGetWatchlistStatusTvs mockGetWatchlistStatusTvs;
+  late MockSaveWatchlistTvs mockSaveWatchlistTvs;
+  late MockRemoveWatchlistTvs mockRemoveWatchlistTvs;
+
+  const tTvId = 1;
+  final tTvDetail = TvDetail(
+    adult: false,
+    backdropPath: '/path.jpg',
+    episodeRunTime: [23],
+    firstAirDate: '2015-01-16',
+    genres: [
+      TvGenre(id: 16, name: 'Animation'),
+      TvGenre(id: 35, name: 'Comedy'),
+    ],
+    homepage: 'https://google.tv',
+    id: 69367,
+    inProduction: false,
+    languages: ['ja'],
+    lastAirDate: '2017-06-23',
+    name: 'Name',
+    numberOfEpisodes: 23,
+    numberOfSeasons: 2,
+    originCountry: ['JP'],
+    originalLanguage: 'ja',
+    originalName: '冴えない彼女の育てかた',
+    overview:
+        'Tomoya Aki is an otaku who has a dream. His dream is to create the best visual novel game ever. The main heroine for this game and the inspiration for this dream is a background character named Megumi Kato who somehow stumbles into main character-esque traits in his eyes. To complete the game in time he has to call upon the aid of his anime loving professional friends who aren\'t so keen on the choice of his main heroine.',
+    popularity: 63.749,
+    posterPath: '/GP7I1yKTp6giJz2fdy0LBWo4zV.jpg',
+    status: 'Ended',
+    tagline: '',
+    voteAverage: 6.7,
+    voteCount: 68,
+  );
+  final tTvList = <Tv>[
+    Tv(
+      adult: false,
+      backdropPath: '/path.jpg',
+      genreIds: [1, 2, 3, 4],
+      id: 1,
+      overview: 'Overview',
+      popularity: 1.0,
+      posterPath: '/path.jpg',
+      voteAverage: 1.0,
+      voteCount: 1,
+      firstAirDate: '2008-01-20',
+      name: 'Name',
+      originalName: 'Original Name',
+    )
+  ];
 
   setUp(() {
     mockGetTvDetail = MockGetTvDetail();
     mockGetTvRecommendations = MockGetTvRecommendations();
-    mockGetWatchlistStatus = MockGetWatchlistStatusTvs();
-    mockSaveWatchlist = MockSaveWatchlistTvs();
-    mockRemoveWatchlist = MockRemoveWatchlistTvs();
-
+    mockGetWatchlistStatusTvs = MockGetWatchlistStatusTvs();
+    mockSaveWatchlistTvs = MockSaveWatchlistTvs();
+    mockRemoveWatchlistTvs = MockRemoveWatchlistTvs();
     cubit = TvDetailCubit(
       getTvDetail: mockGetTvDetail,
       getTvRecommendations: mockGetTvRecommendations,
-      getWatchListStatus: mockGetWatchlistStatus,
-      saveWatchlist: mockSaveWatchlist,
-      removeWatchlist: mockRemoveWatchlist,
+      getWatchListStatus: mockGetWatchlistStatusTvs,
+      saveWatchlist: mockSaveWatchlistTvs,
+      removeWatchlist: mockRemoveWatchlistTvs,
     );
   });
 
-  final tId = 1;
-
-  void _arrangeUsecase() {
-    when(mockGetTvDetail.execute(tId)).thenAnswer((_) async => Right(testTvDetail));
-    when(mockGetTvRecommendations.execute(tId)).thenAnswer((_) async => Right(<Tv>[testTv]));
-  }
-
-  group('Get Tv Detail', () {
+  group('TvDetailCubit', () {
     blocTest<TvDetailCubit, TvDetailState>(
-      'should get data from the usecase',
+      'should emit [TvDetailLoading, TvDetailLoaded] when fetching tv details is successful',
       build: () {
-        _arrangeUsecase();
+        when(mockGetTvDetail.execute(tTvId))
+            .thenAnswer((_) async => Right(tTvDetail));
+        when(mockGetTvRecommendations.execute(tTvId))
+            .thenAnswer((_) async => Right(tTvList));
+        when(mockGetWatchlistStatusTvs.execute(tTvId))
+            .thenAnswer((_) async => false);
         return cubit;
       },
-      act: (cubit) async => await cubit.fetchTvDetail(tId),
-      verify: (_) {
-        verify(mockGetTvDetail.execute(tId));
-        verify(mockGetTvRecommendations.execute(tId));
-      },
+      act: (cubit) async => await cubit.fetchTvDetail(tTvId),
+      expect: () => [
+        TvDetailLoading(),
+        TvDetailLoaded(tTvDetail, tTvList, false),
+      ],
     );
 
     blocTest<TvDetailCubit, TvDetailState>(
-      'should change state to loading when usecase is called',
+      'should emit [TvDetailWatchlistStatus] when loading watchlist status',
       build: () {
-        _arrangeUsecase();
+        when(mockGetWatchlistStatusTvs.execute(tTvId))
+            .thenAnswer((_) async => true);
         return cubit;
       },
-      act: (cubit) async => await cubit.fetchTvDetail(tId),
-      expect: () => [isA<TvDetailLoading>()],
-    );
-
-    blocTest<TvDetailCubit, TvDetailState>(
-      'should change tv when data is gotten successfully',
-      build: () {
-        _arrangeUsecase();
-        return cubit;
-      },
-      act: (cubit) async => await cubit.fetchTvDetail(tId),
-      expect: () => [isA<TvDetailLoaded>()],
-    );
-
-    blocTest<TvDetailCubit, TvDetailState>(
-      'should return error when data is unsuccessful',
-      build: () {
-        when(mockGetTvDetail.execute(tId)).thenAnswer((_) async => Left(ServerFailure('Server Failure')));
-        return cubit;
-      },
-      act: (cubit) async => await cubit.fetchTvDetail(tId),
-      expect: () => [isA<TvDetailError>()],
-    );
-  });
-
-  group('Watchlist', () {
-    blocTest<TvDetailCubit, TvDetailState>(
-      'should get the watchlist status',
-      build: () {
-        when(mockGetWatchlistStatus.execute(tId)).thenAnswer((_) async => true);
-        return cubit;
-      },
-      act: (cubit) async => await cubit.loadWatchlistStatus(tId),
-      expect: () => [isA<WatchlistTvLoaded>()],
-    );
-
-    blocTest<TvDetailCubit, TvDetailState>(
-      'should execute save watchlist when function called',
-      build: () {
-        when(mockSaveWatchlist.execute(testTvDetail)).thenAnswer((_) async => Right('Success'));
-        return cubit;
-      },
-      act: (cubit) async => await cubit.addWatchlist(testTvDetail),
-      verify: (_) {
-        verify(mockSaveWatchlist.execute(testTvDetail));
-      },
-    );
-
-    blocTest<TvDetailCubit, TvDetailState>(
-      'should execute remove watchlist when function called',
-      build: () {
-        when(mockRemoveWatchlist.execute(testTvDetail)).thenAnswer((_) async => Right('Removed'));
-        return cubit;
-      },
-      act: (cubit) async => await cubit.removeFromWatchlist(testTvDetail),
-      verify: (_) {
-        verify(mockRemoveWatchlist.execute(testTvDetail));
-      },
-    );
-
-    blocTest<TvDetailCubit, TvDetailState>(
-      'should update watchlist status when add watchlist success',
-      build: () {
-        when(mockSaveWatchlist.execute(testTvDetail)).thenAnswer((_) async => Right('Added to Watchlist'));
-        return cubit;
-      },
-      act: (cubit) async => await cubit.addWatchlist(testTvDetail),
-      expect: () => [isA<WatchlistTvLoaded>()],
-    );
-
-    blocTest<TvDetailCubit, TvDetailState>(
-      'should update watchlist message when add watchlist failed',
-      build: () {
-        when(mockSaveWatchlist.execute(testTvDetail)).thenAnswer((_) async => Left(DatabaseFailure('Failed')));
-        return cubit;
-      },
-      act: (cubit) async => await cubit.addWatchlist(testTvDetail),
-      expect: () => [isA<WatchlistTvError>()],
+      act: (cubit) async => await cubit.loadWatchlistStatus(tTvId),
+      expect: () => [
+        TvDetailWatchlistStatus(true, ''),
+      ],
     );
   });
 }

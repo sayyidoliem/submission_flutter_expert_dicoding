@@ -1,72 +1,64 @@
+import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:ditonton/common/failure.dart';
-import 'package:ditonton/feature/movie/domain/usecases/get_watchlist_movies.dart';
-import 'package:ditonton/feature/movie/presentation/provider/watchlist_movie_cubit/watchlist_movie_cubit.dart';
+import 'package:ditonton/feature/tv/domain/entities/tv.dart';
+import 'package:ditonton/feature/tv/domain/usecases/search_tvs.dart';
+import 'package:ditonton/feature/tv/presentation/provider/tv_search_cubit/tv_search_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import '../../dummy_data/dummy_objects.dart';
 import 'tv_search_cubit_test.mocks.dart';
 
-@GenerateMocks([GetWatchlistMovies])
+@GenerateMocks([SearchTvs])
 void main() {
-  late WatchlistMoviesCubit cubit;
-  late MockGetWatchlistMovies mockGetWatchlistMovies;
+  late TvSearchCubit cubit;
+  late MockSearchTvs mockSearchTvs;
 
   setUp(() {
-    mockGetWatchlistMovies = MockGetWatchlistMovies();
-    cubit = WatchlistMoviesCubit(getWatchlistMovies: mockGetWatchlistMovies);
+    mockSearchTvs = MockSearchTvs();
+    cubit = TvSearchCubit(searchTvs: mockSearchTvs);
   });
 
-  group('fetchWatchlistMovies', () {
-    test('should emit [WatchlistMoviesLoading, WatchlistMoviesLoaded] when data is fetched successfully', () async {
-      // arrange
-      when(mockGetWatchlistMovies.execute())
-          .thenAnswer((_) async => Right([testWatchlistMovie]));
+  final tTv = Tv(
+    adult: false,
+    backdropPath: '/3HvXeJzSztADlAua3l4gjawVhPC.jpg',
+    firstAirDate: '2015-01-16',
+    genreIds: [16, 35],
+    id: 69367,
+    name: 'Saekano: How to Raise a Boring Girlfriend',
+    originalName: '冴えない彼女の育てかた',
+    overview: 'Tomoya Aki is an otaku who has a dream...',
+    popularity: 63.749,
+    posterPath: '/GP7I1yKTp6giJz2fdy0LBWo4zV.jpg',
+    voteAverage: 6.7,
+    voteCount: 68,
+  );
 
-      // assert later on emitted states
-      final expectedStates = [
-        WatchlistMoviesLoading(),
-        WatchlistMoviesLoaded([testWatchlistMovie]),
-      ];
+  final tTvList = <Tv>[tTv];
+  final tQuery = 'office';
 
-      // act
-      expectLater(cubit.stream, emitsInOrder(expectedStates));
+  group('Search Tvs', () {
+    blocTest<TvSearchCubit, TvSearchState>(
+      'should change state to loading when usecase is called',
+      build: () {
+        when(mockSearchTvs.execute(tQuery))
+            .thenAnswer((_) async => Right(tTvList));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchTvSearch(tQuery),
+      expect: () => [TvSearchLoading(), TvSearchLoaded(tTvList)],
+    );
 
-      await cubit.fetchWatchlistMovies();
-    });
-
-    test('should emit [WatchlistMoviesLoading, WatchlistMoviesError] when fetching data fails', () async {
-      // arrange
-      when(mockGetWatchlistMovies.execute())
-          .thenAnswer((_) async => Left(DatabaseFailure("Can't get data")));
-
-      // assert later on emitted states
-      final expectedStates = [
-        WatchlistMoviesLoading(),
-        WatchlistMoviesError("Can't get data"),
-      ];
-
-      // act
-      expectLater(cubit.stream, emitsInOrder(expectedStates));
-
-      await cubit.fetchWatchlistMovies();
-    });
-
-    test('should emit [WatchlistMoviesLoading] when the fetch is initiated', () async {
-      // arrange
-      when(mockGetWatchlistMovies.execute())
-          .thenAnswer((_) async => Right([testWatchlistMovie]));
-
-      // act
-      expect(cubit.state, isA<WatchlistMoviesInitial>());
-
-      // Start the fetch process
-      await cubit.fetchWatchlistMovies();
-
-      // assert that loading state is emitted
-      expect(cubit.state, isA<WatchlistMoviesLoading>());
-    });
+    blocTest<TvSearchCubit, TvSearchState>(
+      'should return error when data is unsuccessful',
+      build: () {
+        when(mockSearchTvs.execute(tQuery))
+            .thenAnswer((_) async => Left(ServerFailure('Server Failure')));
+        return cubit;
+      },
+      act: (cubit) async => await cubit.fetchTvSearch(tQuery),
+      expect: () => [TvSearchLoading(), TvSearchError('Server Failure')],
+    );
   });
 }

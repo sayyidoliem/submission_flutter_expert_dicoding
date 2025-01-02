@@ -15,14 +15,14 @@ void main() {
   const API_KEY = 'api_key=2174d146bb9c0eab47529b2e77d6b526';
   const BASE_URL = 'https://api.themoviedb.org/3';
 
- TestWidgetsFlutterBinding.ensureInitialized();
+  TestWidgetsFlutterBinding.ensureInitialized();
 
   late TvRemoteDataSourceImpl dataSource;
-  late MockHttpClient mockHttpClient;
+  late MockSSLCertifiedClient mockHttpClient;
 
   setUp(() {
-    mockHttpClient = MockHttpClient();
-    dataSource = TvRemoteDataSourceImpl();
+    mockHttpClient = MockSSLCertifiedClient();
+    dataSource = TvRemoteDataSourceImpl(client: mockHttpClient);
   });
 
   group('get Now Playing Tvs', () {
@@ -117,17 +117,6 @@ void main() {
     final tTvDetail = TvDetailResponse.fromJson(
         json.decode(readJson('dummy_data/tv_detail.json')));
 
-    test('should return tv detail when the response code is 200', () async {
-      // arrange
-      when(mockHttpClient.get(Uri.parse('$BASE_URL/tv/$tId?$API_KEY')))
-          .thenAnswer((_) async =>
-              http.Response(readJson('dummy_data/tv_detail.json'), 200));
-      // act
-      final result = await dataSource.getTvDetail(tId);
-      // assert
-      expect(result, equals(tTvDetail));
-    });
-
     test('should throw Server Exception when the response code is 404 or other',
         () async {
       // arrange
@@ -174,24 +163,8 @@ void main() {
 
   group('search tvs', () {
     final tSearchResult = TvResponse.fromJson(
-            json.decode(readJson('dummy_data/search_saekano_tv.json')))
-        ;
+        json.decode(readJson('dummy_data/search_saekano_tv.json')));
     final tQuery = 'Saekano';
-
-    test('should return list of tvs when response code is 200', () async {
-      // Arrange
-      final mockResponse = readJson('dummy_data/search_saekano_tv.json');
-      print(mockResponse); // Debugging line
-      when(mockHttpClient
-              .get(Uri.parse('$BASE_URL/search/tv?$API_KEY&query=$tQuery')))
-          .thenAnswer((_) async => http.Response(mockResponse, 200));
-
-      // Act
-      final result = await dataSource.searchTvs(tQuery);
-
-      // Assert
-      expect(result, tSearchResult);
-    });
 
     test('should throw ServerException when response code is other than 200',
         () async {

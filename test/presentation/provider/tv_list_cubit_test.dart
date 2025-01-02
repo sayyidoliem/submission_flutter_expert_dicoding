@@ -4,7 +4,6 @@ import 'package:ditonton/feature/tv/domain/entities/tv.dart';
 import 'package:ditonton/feature/tv/domain/usecases/get_now_playing_tvs.dart';
 import 'package:ditonton/feature/tv/domain/usecases/get_popular_tvs.dart';
 import 'package:ditonton/feature/tv/domain/usecases/get_top_rated_tvs.dart';
-import 'package:ditonton/feature/tv/presentation/pages/home_tv_page.dart';
 import 'package:ditonton/feature/tv/presentation/provider/tv_list_cubit/tv_list_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -57,7 +56,7 @@ void main() {
       // act
       await cubit.fetchNowPlayingTvs();
       // assert
-      expect(cubit.state, TvList(tTvList));
+      expect(cubit.state, NowPlayingTvsLoaded(tTvList));
     });
 
     test('should emit [TvListLoading, TvListError] when fetching data fails', () async {
@@ -77,7 +76,7 @@ void main() {
       // act
       await cubit.fetchPopularTvs();
       // assert
-      expect(cubit.state, TvList(tTvList));
+      expect(cubit.state, PopularTvsLoaded(tTvList));
     });
 
     test('should emit [TvListLoading, TvListError] when fetching data fails', () async {
@@ -97,7 +96,7 @@ void main() {
       // act
       await cubit.fetchTopRatedTvs();
       // assert
-      expect(cubit.state, TvList(tTvList));
+      expect(cubit.state, TopRatedTvsLoaded(tTvList));
     });
 
     test('should emit [TvListLoading, TvListError] when fetching data fails', () async {

@@ -9,20 +9,15 @@ part 'watchlist_movie_state.dart';
 class WatchlistMoviesCubit extends Cubit<WatchlistMoviesState> {
   final GetWatchlistMovies getWatchlistMovies;
 
-  WatchlistMoviesCubit({required this.getWatchlistMovies}) 
-      : super(WatchlistMoviesInitial());
+  WatchlistMoviesCubit({required this.getWatchlistMovies}) : super(WatchlistMoviesInitial());
 
   Future<void> fetchWatchlistMovies() async {
-    emit(WatchlistMoviesLoading());
-
+    emit(WatchlistMoviesLoading()); // Emit loading state
     final result = await getWatchlistMovies.execute();
+
     result.fold(
-      (failure) {
-        emit(WatchlistMoviesError(failure.message));
-      },
-      (moviesData) {
-        emit(WatchlistMoviesLoaded(moviesData));
-      },
+      (failure) => emit(WatchlistMoviesError(failure.message)),
+      (movies) => emit(WatchlistMoviesLoaded(movies)),
     );
   }
 }
