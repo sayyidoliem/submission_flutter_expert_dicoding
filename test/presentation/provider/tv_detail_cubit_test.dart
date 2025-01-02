@@ -1,5 +1,4 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:ditonton/common/failure.dart';
 import 'package:ditonton/feature/tv/domain/entities/tv_genre.dart';
 import 'package:ditonton/feature/tv/domain/usecases/get_tv_detail.dart';
 import 'package:ditonton/feature/tv/domain/usecases/get_tv_recommendations.dart';

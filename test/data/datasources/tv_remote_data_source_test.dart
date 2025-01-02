@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:ditonton/common/exception.dart';
 import 'package:ditonton/feature/tv/data/datasources/tv_remote_data_source.dart';
-import 'package:ditonton/feature/tv/data/models/tv_detail_model.dart';
 import 'package:ditonton/feature/tv/data/models/tv_response.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -114,8 +113,6 @@ void main() {
 
   group('get tv detail', () {
     final tId = 1;
-    final tTvDetail = TvDetailResponse.fromJson(
-        json.decode(readJson('dummy_data/tv_detail.json')));
 
     test('should throw Server Exception when the response code is 404 or other',
         () async {
@@ -162,8 +159,6 @@ void main() {
   });
 
   group('search tvs', () {
-    final tSearchResult = TvResponse.fromJson(
-        json.decode(readJson('dummy_data/search_saekano_tv.json')));
     final tQuery = 'Saekano';
 
     test('should throw ServerException when response code is other than 200',

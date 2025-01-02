@@ -20,8 +20,8 @@ tasks.register("clean", Delete) {
 buildscript {
  
   repositories {
-    // Periksa apakah sudah menyertakan Maven Google atau tidak.
-    google()  // Google's Maven repository
+      google()  // Google's Maven repository
+      mavenCentral()  // Maven Central repository
   }
  
   dependencies {
