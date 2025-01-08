@@ -1,10 +1,10 @@
 plugins {
-    id "com.dicoding.ditonton"
+    id "com.android.application"
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
-    id 'com.google.gms.google-services' 
-    id 'com.google.firebase.crashlytics'
+    id 'com.google.gms.google-services'
+    // id 'com.google.firebase.crashlytics'
 }
 
 def localProperties = new Properties()
@@ -44,6 +44,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -52,6 +53,10 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.debug
         }
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"  // Set the JVM target to 1.8
     }
 }
 
