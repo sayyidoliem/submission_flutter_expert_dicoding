@@ -1,3 +1,4 @@
+[![Codemagic build status](https://api.codemagic.io/apps/67228cebe76db4d02277b843/67228cebe76db4d02277b842/status_badge.svg)](https://codemagic.io/app/67228cebe76db4d02277b843/67228cebe76db4d02277b842/latest_build)
 # a199-flutter-expert-project
 
 Repository ini merupakan starter project submission kelas Flutter Expert Dicoding Indonesia.
