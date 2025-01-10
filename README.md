@@ -1,7 +1,7 @@
 [![Codemagic build status](https://api.codemagic.io/apps/67228cebe76db4d02277b843/67228cebe76db4d02277b842/status_badge.svg)](https://codemagic.io/app/67228cebe76db4d02277b843/67228cebe76db4d02277b842/latest_build)
 
 # Firebase Console
-https://drive.google.com/file/d/1ttzUCbbyvDXhGXojjRNowBai_dm-3B6N/view?usp=sharing
+https://drive.google.com/file/d/1MiM18M2_yiiUAuNSrpqh_x3uUU9bk2Hp/view?usp=drivesdk
 https://drive.google.com/file/d/1xDxmkgS4Hx02uB5SavAZm_MHXGW6LCVv/view?usp=sharing
 
 # Codemagic CI/CD
