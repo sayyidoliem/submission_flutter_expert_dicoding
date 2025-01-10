@@ -5,7 +5,7 @@ import 'package:http/io_client.dart';
 
 Future<IOClient> initializeIOClient() async {
     final ByteData sslCert =
-        await rootBundle.load('assets/cert/themoviedb.org.cer');
+        await rootBundle.load('certificates/_.themoviedb.org.pem');
 
     SecurityContext securityContext = SecurityContext(withTrustedRoots: false);
     securityContext.setTrustedCertificatesBytes(sslCert.buffer.asInt8List());
