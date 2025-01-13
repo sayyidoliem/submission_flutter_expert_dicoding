@@ -10,15 +10,28 @@ import 'package:ditonton/feature/tv/presentation/provider/tv_list_cubit/tv_list_
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomeTvPage extends StatelessWidget {
+class HomeTvPage extends StatefulWidget {
   static const ROUTE_NAME = '/tv';
+  const HomeTvPage({super.key});
+
+  @override
+  State<HomeTvPage> createState() => _HomeTvPageState();
+}
+
+class _HomeTvPageState extends State<HomeTvPage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      context.read<TvListCubit>()
+        ..fetchNowPlayingTvs()
+        ..fetchPopularTvs()
+        ..fetchTopRatedTvs();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    context.read<TvListCubit>().fetchNowPlayingTvs();
-    context.read<TvListCubit>().fetchPopularTvs();
-    context.read<TvListCubit>().fetchTopRatedTvs();
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Ditonton'),
@@ -39,7 +52,8 @@ class HomeTvPage extends StatelessWidget {
             children: [
               _buildSubHeading(
                 title: 'Now Playing',
-                onTap: () => Navigator.pushNamed(context, NowPlayTvsPage.ROUTE_NAME),
+                onTap: () =>
+                    Navigator.pushNamed(context, NowPlayTvsPage.ROUTE_NAME),
               ),
               BlocBuilder<TvListCubit, TvListState>(
                 builder: (context, state) {
@@ -54,7 +68,8 @@ class HomeTvPage extends StatelessWidget {
               ),
               _buildSubHeading(
                 title: 'Popular',
-                onTap: () => Navigator.pushNamed(context, PopularTvsPage.ROUTE_NAME),
+                onTap: () =>
+                    Navigator.pushNamed(context, PopularTvsPage.ROUTE_NAME),
               ),
               BlocBuilder<TvListCubit, TvListState>(
                 builder: (context, state) {
@@ -69,7 +84,8 @@ class HomeTvPage extends StatelessWidget {
               ),
               _buildSubHeading(
                 title: 'Top Rated',
-                onTap: () => Navigator.pushNamed(context, TopRatedTvsPage.ROUTE_NAME),
+                onTap: () =>
+                    Navigator.pushNamed(context, TopRatedTvsPage.ROUTE_NAME),
               ),
               BlocBuilder<TvListCubit, TvListState>(
                 builder: (context, state) {
@@ -136,7 +152,8 @@ class TvList extends StatelessWidget {
                 borderRadius: BorderRadius.all(Radius.circular(16)),
                 child: CachedNetworkImage(
                   imageUrl: '$BASE_IMAGE_URL${tv.posterPath}',
-                  placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                  placeholder: (context, url) =>
+                      Center(child: CircularProgressIndicator()),
                   errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
               ),
