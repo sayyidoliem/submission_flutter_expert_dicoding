@@ -21,7 +21,6 @@ class SearchMoviesPage extends StatelessWidget {
           children: [
             TextField(
               onSubmitted: (query) {
-                FirebaseCrashlytics.instance.crash();
                 context.read<MovieSearchCubit>().fetchMovieSearch(query);
               },
               decoration: InputDecoration(

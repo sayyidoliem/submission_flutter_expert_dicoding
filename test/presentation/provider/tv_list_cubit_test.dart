@@ -56,7 +56,7 @@ void main() {
       // act
       await cubit.fetchNowPlayingTvs();
       // assert
-      expect(cubit.state, NowPlayingTvsLoaded(tTvList));
+      expect(cubit.state, NowPlayingTvListLoaded(tTvList));
     });
 
     test('should emit [TvListLoading, TvListError] when fetching data fails', () async {
@@ -76,7 +76,7 @@ void main() {
       // act
       await cubit.fetchPopularTvs();
       // assert
-      expect(cubit.state, PopularTvsLoaded(tTvList));
+      expect(cubit.state, PopularTvListLoaded(tTvList));
     });
 
     test('should emit [TvListLoading, TvListError] when fetching data fails', () async {
@@ -96,7 +96,7 @@ void main() {
       // act
       await cubit.fetchTopRatedTvs();
       // assert
-      expect(cubit.state, TopRatedTvsLoaded(tTvList));
+      expect(cubit.state, TopRatedTvListLoaded(tTvList));
     });
 
     test('should emit [TvListLoading, TvListError] when fetching data fails', () async {

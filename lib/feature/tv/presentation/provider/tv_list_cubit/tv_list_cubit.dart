@@ -24,7 +24,7 @@ class TvListCubit extends Cubit<TvListState> {
     final result = await getNowPlayingTvs.execute();
     result.fold(
       (failure) => emit(TvListError(failure.message)),
-      (tvsData) => emit(NowPlayingTvsLoaded(tvsData)),
+      (tvsData) => emit(NowPlayingTvListLoaded(tvsData)),
     );
   }
 
@@ -34,7 +34,7 @@ class TvListCubit extends Cubit<TvListState> {
     final result = await getPopularTvs.execute();
     result.fold(
       (failure) => emit(TvListError(failure.message)),
-      (tvsData) => emit(PopularTvsLoaded(tvsData)),
+      (tvsData) => emit(PopularTvListLoaded(tvsData)),
     );
   }
 
@@ -44,7 +44,7 @@ class TvListCubit extends Cubit<TvListState> {
     final result = await getTopRatedTvs.execute();
     result.fold(
       (failure) => emit(TvListError(failure.message)),
-      (tvsData) => emit(TopRatedTvsLoaded(tvsData)),
+      (tvsData) => emit(TopRatedTvListLoaded(tvsData)),
     );
   }
 }

@@ -59,7 +59,7 @@ class _HomeTvPageState extends State<HomeTvPage> {
                 builder: (context, state) {
                   if (state is TvListLoading) {
                     return Center(child: CircularProgressIndicator());
-                  } else if (state is NowPlayingTvsLoaded) {
+                  } else if (state is NowPlayingTvListLoaded) {
                     return TvList(state.nowPlayingTvs);
                   } else {
                     return Text('Failed to load');
@@ -75,7 +75,7 @@ class _HomeTvPageState extends State<HomeTvPage> {
                 builder: (context, state) {
                   if (state is TvListLoading) {
                     return Center(child: CircularProgressIndicator());
-                  } else if (state is PopularTvsLoaded) {
+                  } else if (state is PopularTvListLoaded) {
                     return TvList(state.popularTvs);
                   } else {
                     return Text('Failed to load');
@@ -91,7 +91,7 @@ class _HomeTvPageState extends State<HomeTvPage> {
                 builder: (context, state) {
                   if (state is TvListLoading) {
                     return Center(child: CircularProgressIndicator());
-                  } else if (state is TopRatedTvsLoaded) {
+                  } else if (state is TopRatedTvListLoaded) {
                     return TvList(state.topRatedTvs);
                   } else {
                     return Text('Failed to load');
