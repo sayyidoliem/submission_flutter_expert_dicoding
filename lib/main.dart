@@ -2,6 +2,7 @@ import 'package:ditonton/common/constants.dart';
 import 'package:ditonton/feature/movie/presentation/pages/about_page.dart';
 import 'package:ditonton/feature/movie/presentation/pages/movie_detail_page.dart';
 import 'package:ditonton/feature/movie/presentation/pages/home_movie_page.dart';
+import 'package:ditonton/feature/movie/presentation/pages/now_play_movies_page.dart';
 import 'package:ditonton/feature/movie/presentation/pages/popular_movies_page.dart';
 import 'package:ditonton/feature/movie/presentation/pages/search_movies_page.dart';
 import 'package:ditonton/feature/movie/presentation/pages/top_rated_movies_page.dart';
@@ -9,6 +10,7 @@ import 'package:ditonton/feature/movie/presentation/pages/watchlist_movies_page.
 import 'package:ditonton/feature/movie/presentation/provider/movie_detail_cubit/movie_detail_cubit.dart';
 import 'package:ditonton/feature/movie/presentation/provider/movie_list_cubit/movie_list_cubit.dart';
 import 'package:ditonton/feature/movie/presentation/provider/movie_search_cubit/movie_search_cubit.dart';
+import 'package:ditonton/feature/movie/presentation/provider/now_play_movie_cubit/now_play_movie_cubit.dart';
 import 'package:ditonton/feature/movie/presentation/provider/popular_movie_cubit/popular_movie_cubit.dart';
 import 'package:ditonton/feature/movie/presentation/provider/top_rated_movie_cubit/top_rated_movie_cubit.dart';
 import 'package:ditonton/feature/movie/presentation/provider/watchlist_movie_cubit/watchlist_movie_cubit.dart';
@@ -56,6 +58,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => di.locator<MovieSearchCubit>(),
+        ),
+        BlocProvider(
+          create: (_) => di.locator<NowPlayingMovieCubit>(),
         ),
         BlocProvider(
           create: (_) => di.locator<TopRatedMoviesCubit>(),
@@ -108,6 +113,8 @@ class MyApp extends StatelessWidget {
               );
             case HomeTvPage.ROUTE_NAME:
               return CupertinoPageRoute(builder: (_) => HomeTvPage());
+            case NowPlayMoviesPage.ROUTE_NAME:
+              return CupertinoPageRoute(builder: (_) => NowPlayMoviesPage());
             case PopularMoviesPage.ROUTE_NAME:
               return CupertinoPageRoute(builder: (_) => PopularMoviesPage());
             case TopRatedMoviesPage.ROUTE_NAME:
@@ -126,8 +133,7 @@ class MyApp extends StatelessWidget {
             case WatchlistMoviesPage.ROUTE_NAME:
               return MaterialPageRoute(builder: (_) => WatchlistMoviesPage());
             case NowPlayTvsPage.ROUTE_NAME:
-              return CupertinoPageRoute(
-                  builder: (_) => NowPlayTvsPage()); 
+              return CupertinoPageRoute(builder: (_) => NowPlayTvsPage());
             case PopularTvsPage.ROUTE_NAME:
               return CupertinoPageRoute(builder: (_) => PopularTvsPage());
             case TopRatedTvsPage.ROUTE_NAME:

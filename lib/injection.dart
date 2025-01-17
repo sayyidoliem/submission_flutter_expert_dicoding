@@ -16,6 +16,7 @@ import 'package:ditonton/feature/movie/domain/usecases/search_movies.dart';
 import 'package:ditonton/feature/movie/presentation/provider/movie_detail_cubit/movie_detail_cubit.dart';
 import 'package:ditonton/feature/movie/presentation/provider/movie_list_cubit/movie_list_cubit.dart';
 import 'package:ditonton/feature/movie/presentation/provider/movie_search_cubit/movie_search_cubit.dart';
+import 'package:ditonton/feature/movie/presentation/provider/now_play_movie_cubit/now_play_movie_cubit.dart';
 import 'package:ditonton/feature/movie/presentation/provider/popular_movie_cubit/popular_movie_cubit.dart';
 import 'package:ditonton/feature/movie/presentation/provider/top_rated_movie_cubit/top_rated_movie_cubit.dart';
 import 'package:ditonton/feature/movie/presentation/provider/watchlist_movie_cubit/watchlist_movie_cubit.dart';
@@ -68,6 +69,11 @@ void init() {
   locator.registerFactory(
     () => MovieSearchCubit(
       searchMovies: locator(),
+    ),
+  );
+  locator.registerFactory(
+    () => NowPlayingMovieCubit(
+      locator(),
     ),
   );
   locator.registerFactory(
