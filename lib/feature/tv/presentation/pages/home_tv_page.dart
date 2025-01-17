@@ -6,6 +6,8 @@ import 'package:ditonton/feature/tv/presentation/pages/popular_tv_page.dart';
 import 'package:ditonton/feature/tv/presentation/pages/search_tv_page.dart';
 import 'package:ditonton/feature/tv/presentation/pages/top_rated_tv_page.dart';
 import 'package:ditonton/feature/tv/presentation/pages/tv_detail_page.dart';
+import 'package:ditonton/feature/tv/presentation/provider/now_play_tvs_cubit/now_play_tvs_cubit.dart';
+import 'package:ditonton/feature/tv/presentation/provider/popular_tvs_cubit/popular_tvs_cubit.dart';
 import 'package:ditonton/feature/tv/presentation/provider/tv_list_cubit/tv_list_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,10 +25,9 @@ class _HomeTvPageState extends State<HomeTvPage> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      context.read<TvListCubit>()
-        ..fetchNowPlayingTvs()
-        ..fetchPopularTvs()
-        ..fetchTopRatedTvs();
+      context.read<TvListCubit>().fetchTopRatedTvs(); 
+      context.read<NowPlayingTvsCubit>().fetchNowPlayingTvs(); 
+      context.read<PopularTvsCubit>().fetchPopularTvs();
     });
   }
 
@@ -55,11 +56,11 @@ class _HomeTvPageState extends State<HomeTvPage> {
                 onTap: () =>
                     Navigator.pushNamed(context, NowPlayTvsPage.ROUTE_NAME),
               ),
-              BlocBuilder<TvListCubit, TvListState>(
+              BlocBuilder<NowPlayingTvsCubit, NowPlayingTvsState>(
                 builder: (context, state) {
-                  if (state is TvListLoading) {
+                  if (state is NowPlayingTvsLoading) {
                     return Center(child: CircularProgressIndicator());
-                  } else if (state is NowPlayingTvListLoaded) {
+                  } else if (state is NowPlayingTvsLoaded) {
                     return TvList(state.nowPlayingTvs);
                   } else {
                     return Text('Failed to load');
@@ -71,12 +72,12 @@ class _HomeTvPageState extends State<HomeTvPage> {
                 onTap: () =>
                     Navigator.pushNamed(context, PopularTvsPage.ROUTE_NAME),
               ),
-              BlocBuilder<TvListCubit, TvListState>(
+              BlocBuilder<PopularTvsCubit, PopularTvsState>(
                 builder: (context, state) {
-                  if (state is TvListLoading) {
+                  if (state is PopularTvsLoading) {
                     return Center(child: CircularProgressIndicator());
-                  } else if (state is PopularTvListLoaded) {
-                    return TvList(state.popularTvs);
+                  } else if (state is PopularTvsLoaded) {
+                    return TvList(state.tvs);
                   } else {
                     return Text('Failed to load');
                   }

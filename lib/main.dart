@@ -13,11 +13,13 @@ import 'package:ditonton/feature/movie/presentation/provider/popular_movie_cubit
 import 'package:ditonton/feature/movie/presentation/provider/top_rated_movie_cubit/top_rated_movie_cubit.dart';
 import 'package:ditonton/feature/movie/presentation/provider/watchlist_movie_cubit/watchlist_movie_cubit.dart';
 import 'package:ditonton/feature/tv/presentation/pages/home_tv_page.dart';
+import 'package:ditonton/feature/tv/presentation/pages/now_play_tv_page.dart';
 import 'package:ditonton/feature/tv/presentation/pages/popular_tv_page.dart';
 import 'package:ditonton/feature/tv/presentation/pages/search_tv_page.dart';
 import 'package:ditonton/feature/tv/presentation/pages/top_rated_tv_page.dart';
 import 'package:ditonton/feature/tv/presentation/pages/tv_detail_page.dart';
 import 'package:ditonton/feature/tv/presentation/pages/watchlist_tv_page.dart';
+import 'package:ditonton/feature/tv/presentation/provider/now_play_tvs_cubit/now_play_tvs_cubit.dart';
 import 'package:ditonton/feature/tv/presentation/provider/popular_tvs_cubit/popular_tvs_cubit.dart';
 import 'package:ditonton/feature/tv/presentation/provider/top_rated_tvs_cubit/top_rated_tvs_cubit.dart';
 import 'package:ditonton/feature/tv/presentation/provider/tv_detail_cubit/tv_detail_cubit.dart';
@@ -77,6 +79,9 @@ class MyApp extends StatelessWidget {
           create: (_) => di.locator<TopRatedTvsCubit>(),
         ),
         BlocProvider(
+          create: (_) => di.locator<NowPlayingTvsCubit>(),
+        ),
+        BlocProvider(
           create: (_) => di.locator<PopularTvsCubit>(),
         ),
         BlocProvider(
@@ -120,6 +125,9 @@ class MyApp extends StatelessWidget {
               );
             case WatchlistMoviesPage.ROUTE_NAME:
               return MaterialPageRoute(builder: (_) => WatchlistMoviesPage());
+            case NowPlayTvsPage.ROUTE_NAME:
+              return CupertinoPageRoute(
+                  builder: (_) => NowPlayTvsPage()); 
             case PopularTvsPage.ROUTE_NAME:
               return CupertinoPageRoute(builder: (_) => PopularTvsPage());
             case TopRatedTvsPage.ROUTE_NAME:

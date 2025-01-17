@@ -34,6 +34,7 @@ import 'package:ditonton/feature/tv/domain/usecases/get_watchlist_tvs.dart';
 import 'package:ditonton/feature/tv/domain/usecases/remove_watchlist_tvs.dart';
 import 'package:ditonton/feature/tv/domain/usecases/save_watchlist_tvs.dart';
 import 'package:ditonton/feature/tv/domain/usecases/search_tvs.dart';
+import 'package:ditonton/feature/tv/presentation/provider/now_play_tvs_cubit/now_play_tvs_cubit.dart';
 import 'package:ditonton/feature/tv/presentation/provider/popular_tvs_cubit/popular_tvs_cubit.dart';
 import 'package:ditonton/feature/tv/presentation/provider/top_rated_tvs_cubit/top_rated_tvs_cubit.dart';
 import 'package:ditonton/feature/tv/presentation/provider/tv_detail_cubit/tv_detail_cubit.dart';
@@ -108,6 +109,11 @@ void init() {
     ),
   );
   locator.registerFactory(
+    () => NowPlayingTvsCubit(
+      getNowPlayingTvs: locator(),
+    ),
+  );
+  locator.registerFactory(
     () => PopularTvsCubit(
       locator(),
     ),
@@ -177,5 +183,7 @@ void init() {
 
   // external
   locator.registerLazySingleton(() => http.Client());
-  locator.registerLazySingleton<SSLCertifiedClient>(() => SSLCertifiedClient(),);
+  locator.registerLazySingleton<SSLCertifiedClient>(
+    () => SSLCertifiedClient(),
+  );
 }
