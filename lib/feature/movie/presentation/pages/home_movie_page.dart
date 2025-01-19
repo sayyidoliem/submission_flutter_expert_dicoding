@@ -29,8 +29,8 @@ class _HomeMoviePageState extends State<HomeMoviePage> {
     super.initState();
     Future.microtask(() {
       context.read<MovieListCubit>().fetchNowPlayingMovies();
-      context.read<MovieListCubit>().fetchPopularMovies();
-      context.read<MovieListCubit>().fetchTopRatedMovies();
+      context.read<PopularMoviesCubit>().fetchPopularMovies();
+      context.read<TopRatedMoviesCubit>().fetchTopRatedMovies();
     });
   }
 
