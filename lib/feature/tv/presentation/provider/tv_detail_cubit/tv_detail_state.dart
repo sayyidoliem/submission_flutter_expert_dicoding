@@ -42,22 +42,3 @@ final class TvDetailError extends TvDetailState {
   @override
   List<Object> get props => [message];
 }
-
-final class TvDetailWatchlistUpdated extends TvDetailState {
-  final String message;
-
-  TvDetailWatchlistUpdated(this.message);
-
-  @override
-  List<Object> get props => [message];
-}
-
-final class TvDetailWatchlistStatus extends TvDetailState {
-  final bool isAddedToWatchlist;
-  final String message;
-
-  TvDetailWatchlistStatus(this.isAddedToWatchlist, this.message);
-
-  @override
-  List<Object> get props => [isAddedToWatchlist, message];
-}

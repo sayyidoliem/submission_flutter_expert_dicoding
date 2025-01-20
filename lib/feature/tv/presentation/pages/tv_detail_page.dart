@@ -4,6 +4,7 @@ import 'package:ditonton/feature/tv/domain/entities/tv_genre.dart';
 import 'package:ditonton/feature/tv/domain/entities/tv.dart';
 import 'package:ditonton/feature/tv/domain/entities/tv_detail.dart';
 import 'package:ditonton/feature/tv/presentation/provider/tv_detail_cubit/tv_detail_cubit.dart';
+import 'package:ditonton/feature/tv/presentation/provider/watchlist_tv_cubit/watchlist_tv_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +25,7 @@ class _TvDetailPageState extends State<TvDetailPage> {
     super.initState();
     Future.microtask(() {
       context.read<TvDetailCubit>().fetchTvDetail(widget.id);
-      context.read<TvDetailCubit>().loadWatchlistStatus(widget.id);
+      context.read<WatchlistTvCubit>().loadWatchlistStatus(widget.id);
     });
   }
 
@@ -84,7 +85,8 @@ class DetailContent extends StatelessWidget {
                   color: kRichBlack,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 child: SingleChildScrollView(
                   controller: scrollController,
                   child: Column(
@@ -93,23 +95,26 @@ class DetailContent extends StatelessWidget {
                       Text(tv.name ?? 'title', style: kHeading5),
                       FilledButton(
                         onPressed: () async {
-                          final cubit = context.read<TvDetailCubit>();
+                          final cubit = context.read<WatchlistTvCubit>();
                           if (!isAddedWatchlist) {
                             await cubit.addWatchlist(tv);
                           } else {
                             await cubit.removeFromWatchlist(tv);
                           }
 
-                               final message = cubit.state is TvDetailWatchlistStatus
-                                    ? (cubit.state as TvDetailWatchlistStatus).message
-                                    : 'Action Failed';
+                          final message = cubit.state is TvDetailWatchlistStatus
+                              ? (cubit.state as TvDetailWatchlistStatus).message
+                              : 'Action Failed';
 
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(SnackBar(content: Text(message)));
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            isAddedWatchlist ? Icon(Icons.check) : Icon(Icons.add),
+                            isAddedWatchlist
+                                ? Icon(Icons.check)
+                                : Icon(Icons.add),
                             Text('Watchlist'),
                           ],
                         ),
@@ -188,8 +193,10 @@ class DetailContent extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: CachedNetworkImage(
-                        imageUrl: 'https://image.tmdb.org/t/p/w500${tv.posterPath}',
-                        placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                        imageUrl:
+                            'https://image.tmdb.org/t/p/w500${tv.posterPath}',
+                        placeholder: (context, url) =>
+                            Center(child: CircularProgressIndicator()),
                         errorWidget: (context, url, error) => Icon(Icons.error),
                       ),
                     ),

@@ -4,6 +4,7 @@ import 'package:ditonton/feature/movie/domain/entities/movie_genre.dart';
 import 'package:ditonton/feature/movie/domain/entities/movie.dart';
 import 'package:ditonton/feature/movie/domain/entities/movie_detail.dart';
 import 'package:ditonton/feature/movie/presentation/provider/movie_detail_cubit/movie_detail_cubit.dart';
+import 'package:ditonton/feature/movie/presentation/provider/watchlist_movie_cubit/watchlist_movie_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +25,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     super.initState();
     Future.microtask(() {
       context.read<MovieDetailCubit>().fetchMovieDetail(widget.id);
-      context.read<MovieDetailCubit>().loadWatchlistStatus(widget.id);
+      context.read<WatchlistMoviesCubit>().loadWatchlistStatus(widget.id);
     });
   }
 
@@ -38,10 +39,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           } else if (state is MovieDetailLoaded) {
             return SafeArea(
               child: DetailContent(
-                state.movie,
-                state.recommendations,
-                state.isAddedToWatchlist,
-              ),
+                  state.movie, state.recommendations, state.isAddedToWatchlist),
             );
           } else if (state is MovieDetailError) {
             return Center(child: Text(state.message));
@@ -69,7 +67,8 @@ class DetailContent extends StatelessWidget {
         CachedNetworkImage(
           imageUrl: 'https://image.tmdb.org/t/p/w500${movie.posterPath}',
           width: screenWidth,
-          placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+          placeholder: (context, url) =>
+              Center(child: CircularProgressIndicator()),
           errorWidget: (context, url, error) => Icon(Icons.error),
         ),
         Container(
@@ -98,23 +97,29 @@ class DetailContent extends StatelessWidget {
                             Text(movie.title, style: kHeading5),
                             FilledButton(
                               onPressed: () async {
-                                final cubit = context.read<MovieDetailCubit>();
+                                final cubit =
+                                    context.read<WatchlistMoviesCubit>();
                                 if (!isAddedWatchlist) {
                                   await cubit.addWatchlist(movie);
                                 } else {
                                   await cubit.removeFromWatchlist(movie);
                                 }
 
-                                final message = cubit.state is WatchlistStatusState
-                                    ? (cubit.state as WatchlistStatusState).message
-                                    : 'Action Failed';
+                                final message =
+                                    cubit.state is WatchlistStatusState
+                                        ? (cubit.state as WatchlistStatusState)
+                                            .message
+                                        : 'Action Failed';
 
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(message)));
                               },
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  isAddedWatchlist ? Icon(Icons.check) : Icon(Icons.add),
+                                  isAddedWatchlist
+                                      ? Icon(Icons.check)
+                                      : Icon(Icons.add),
                                   Text('Watchlist'),
                                 ],
                               ),
@@ -126,7 +131,8 @@ class DetailContent extends StatelessWidget {
                                 RatingBarIndicator(
                                   rating: movie.voteAverage / 2,
                                   itemCount: 5,
-                                  itemBuilder: (context, index) => Icon(Icons.star, color: kMikadoYellow),
+                                  itemBuilder: (context, index) =>
+                                      Icon(Icons.star, color: kMikadoYellow),
                                   itemSize: 24,
                                 ),
                                 Text('${movie.voteAverage}'),
@@ -144,7 +150,8 @@ class DetailContent extends StatelessWidget {
                     ),
                     Align(
                       alignment: Alignment.topCenter,
-                      child: Container(color: Colors.white, height: 4, width: 48),
+                      child:
+                          Container(color: Colors.white, height: 4, width: 48),
                     ),
                   ],
                 ),
@@ -208,8 +215,10 @@ class DetailContent extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.all(Radius.circular(8)),
                       child: CachedNetworkImage(
-                        imageUrl: 'https://image.tmdb.org/t/p/w500${movie.posterPath}',
-                        placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                        imageUrl:
+                            'https://image.tmdb.org/t/p/w500${movie.posterPath}',
+                        placeholder: (context, url) =>
+                            Center(child: CircularProgressIndicator()),
                         errorWidget: (context, url, error) => Icon(Icons.error),
                       ),
                     ),
