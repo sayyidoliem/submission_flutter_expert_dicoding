@@ -8,7 +8,6 @@ import 'package:ditonton/feature/movie/presentation/pages/popular_movies_page.da
 import 'package:ditonton/feature/movie/presentation/pages/search_movies_page.dart';
 import 'package:ditonton/feature/movie/presentation/pages/top_rated_movies_page.dart';
 import 'package:ditonton/feature/movie/presentation/pages/watchlist_movies_page.dart';
-import 'package:ditonton/feature/movie/presentation/provider/movie_list_cubit/movie_list_cubit.dart';
 import 'package:ditonton/feature/movie/presentation/provider/now_play_movie_cubit/now_play_movie_cubit.dart';
 import 'package:ditonton/feature/movie/presentation/provider/now_play_movie_cubit/now_play_movie_state.dart';
 import 'package:ditonton/feature/movie/presentation/provider/popular_movie_cubit/popular_movie_cubit.dart';
@@ -28,7 +27,7 @@ class _HomeMoviePageState extends State<HomeMoviePage> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      context.read<MovieListCubit>().fetchNowPlayingMovies();
+      context.read<NowPlayingMoviesCubit>().fetchNowPlayingMovie();
       context.read<PopularMoviesCubit>().fetchPopularMovies();
       context.read<TopRatedMoviesCubit>().fetchTopRatedMovies();
     });
@@ -111,7 +110,7 @@ class _HomeMoviePageState extends State<HomeMoviePage> {
                 onTap: () =>
                     Navigator.pushNamed(context, NowPlayMoviesPage.ROUTE_NAME),
               ),
-              BlocBuilder<NowPlayingMovieCubit, NowPlayingMovieState>(
+              BlocBuilder<NowPlayingMoviesCubit, NowPlayingMovieState>(
                 builder: (context, state) {
                   if (state is NowPlayingMovieLoading) {
                     return Center(

@@ -16,7 +16,7 @@ class _NowPlayMoviesPageState extends State<NowPlayMoviesPage> {
   void initState() {
     super.initState();
     Future.microtask(
-        () => context.read<NowPlayingMovieCubit>().fetchNowPlayingMovie());
+        () => context.read<NowPlayingMoviesCubit>().fetchNowPlayingMovie());
   }
 
   @override
@@ -27,7 +27,7 @@ class _NowPlayMoviesPageState extends State<NowPlayMoviesPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: BlocBuilder<NowPlayingMovieCubit, NowPlayingMovieState>(
+        child: BlocBuilder<NowPlayingMoviesCubit, NowPlayingMovieState>(
           builder: (context, state) {
             if (state is NowPlayingMovieLoading) {
               return const Center(
