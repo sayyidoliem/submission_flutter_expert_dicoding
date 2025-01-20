@@ -62,8 +62,6 @@ void init() {
       getMovieDetail: locator(),
       getMovieRecommendations: locator(),
       getWatchListStatus: locator(),
-      saveWatchlist: locator(),
-      removeWatchlist: locator(),
     ),
   );
   locator.registerFactory(
@@ -89,6 +87,9 @@ void init() {
   locator.registerFactory(
     () => WatchlistMoviesCubit(
       getWatchlistMovies: locator(),
+      getWatchListStatus: locator(),
+      saveWatchlist: locator(),
+      removeWatchlist: locator(),
     ),
   );
 
@@ -105,8 +106,6 @@ void init() {
       getTvDetail: locator(),
       getTvRecommendations: locator(),
       getWatchListStatus: locator(),
-      saveWatchlist: locator(),
-      removeWatchlist: locator(),
     ),
   );
   locator.registerFactory(
@@ -132,6 +131,9 @@ void init() {
   locator.registerFactory(
     () => WatchlistTvCubit(
       getWatchlistTvs: locator(),
+      getWatchListStatus: locator(),
+      saveWatchlist: locator(),
+      removeWatchlist: locator(),
     ),
   );
 
