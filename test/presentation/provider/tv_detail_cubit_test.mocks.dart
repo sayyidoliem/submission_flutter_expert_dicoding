@@ -16,10 +16,6 @@ import 'package:ditonton/feature/tv/domain/usecases/get_tv_recommendations.dart'
     as _i8;
 import 'package:ditonton/feature/tv/domain/usecases/get_watchlist_status_tvs.dart'
     as _i10;
-import 'package:ditonton/feature/tv/domain/usecases/remove_watchlist_tvs.dart'
-    as _i12;
-import 'package:ditonton/feature/tv/domain/usecases/save_watchlist_tvs.dart'
-    as _i11;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -142,71 +138,4 @@ class MockGetWatchlistStatusTvs extends _i1.Mock
             returnValue: _i5.Future<bool>.value(false),
           )
           as _i5.Future<bool>);
-}
-
-/// A class which mocks [SaveWatchlistTvs].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockSaveWatchlistTvs extends _i1.Mock implements _i11.SaveWatchlistTvs {
-  MockSaveWatchlistTvs() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i2.TvRepository get repository =>
-      (super.noSuchMethod(
-            Invocation.getter(#repository),
-            returnValue: _FakeTvRepository_0(
-              this,
-              Invocation.getter(#repository),
-            ),
-          )
-          as _i2.TvRepository);
-
-  @override
-  _i5.Future<_i3.Either<_i6.Failure, String>> execute(_i7.TvDetail? movie) =>
-      (super.noSuchMethod(
-            Invocation.method(#execute, [movie]),
-            returnValue: _i5.Future<_i3.Either<_i6.Failure, String>>.value(
-              _FakeEither_1<_i6.Failure, String>(
-                this,
-                Invocation.method(#execute, [movie]),
-              ),
-            ),
-          )
-          as _i5.Future<_i3.Either<_i6.Failure, String>>);
-}
-
-/// A class which mocks [RemoveWatchlistTvs].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockRemoveWatchlistTvs extends _i1.Mock
-    implements _i12.RemoveWatchlistTvs {
-  MockRemoveWatchlistTvs() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i2.TvRepository get repository =>
-      (super.noSuchMethod(
-            Invocation.getter(#repository),
-            returnValue: _FakeTvRepository_0(
-              this,
-              Invocation.getter(#repository),
-            ),
-          )
-          as _i2.TvRepository);
-
-  @override
-  _i5.Future<_i3.Either<_i6.Failure, String>> execute(_i7.TvDetail? tv) =>
-      (super.noSuchMethod(
-            Invocation.method(#execute, [tv]),
-            returnValue: _i5.Future<_i3.Either<_i6.Failure, String>>.value(
-              _FakeEither_1<_i6.Failure, String>(
-                this,
-                Invocation.method(#execute, [tv]),
-              ),
-            ),
-          )
-          as _i5.Future<_i3.Either<_i6.Failure, String>>);
 }

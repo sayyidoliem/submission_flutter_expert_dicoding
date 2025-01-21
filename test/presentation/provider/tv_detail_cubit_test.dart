@@ -1,10 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:ditonton/feature/tv/domain/entities/tv_genre.dart';
+import 'package:ditonton/common/failure.dart';
 import 'package:ditonton/feature/tv/domain/usecases/get_tv_detail.dart';
 import 'package:ditonton/feature/tv/domain/usecases/get_tv_recommendations.dart';
 import 'package:ditonton/feature/tv/domain/usecases/get_watchlist_status_tvs.dart';
-import 'package:ditonton/feature/tv/domain/usecases/save_watchlist_tvs.dart';
-import 'package:ditonton/feature/tv/domain/usecases/remove_watchlist_tvs.dart';
 import 'package:ditonton/feature/tv/presentation/provider/tv_detail_cubit/tv_detail_cubit.dart';
 import 'package:ditonton/feature/tv/domain/entities/tv.dart';
 import 'package:ditonton/feature/tv/domain/entities/tv_detail.dart';
@@ -19,16 +17,12 @@ import 'tv_detail_cubit_test.mocks.dart';
   GetTvDetail,
   GetTvRecommendations,
   GetWatchlistStatusTvs,
-  SaveWatchlistTvs,
-  RemoveWatchlistTvs,
 ])
 void main() {
-  late TvDetailCubit cubit;
+  late TvDetailCubit tvDetailCubit;
   late MockGetTvDetail mockGetTvDetail;
   late MockGetTvRecommendations mockGetTvRecommendations;
   late MockGetWatchlistStatusTvs mockGetWatchlistStatusTvs;
-  late MockSaveWatchlistTvs mockSaveWatchlistTvs;
-  late MockRemoveWatchlistTvs mockRemoveWatchlistTvs;
 
   const tTvId = 1;
   final tTvDetail = TvDetail(
@@ -36,10 +30,7 @@ void main() {
     backdropPath: '/path.jpg',
     episodeRunTime: [23],
     firstAirDate: '2015-01-16',
-    genres: [
-      TvGenre(id: 16, name: 'Animation'),
-      TvGenre(id: 35, name: 'Comedy'),
-    ],
+    genres: [],
     homepage: 'https://google.tv',
     id: 69367,
     inProduction: false,
@@ -51,8 +42,7 @@ void main() {
     originCountry: ['JP'],
     originalLanguage: 'ja',
     originalName: '冴えない彼女の育てかた',
-    overview:
-        'Tomoya Aki is an otaku who has a dream. His dream is to create the best visual novel game ever. The main heroine for this game and the inspiration for this dream is a background character named Megumi Kato who somehow stumbles into main character-esque traits in his eyes. To complete the game in time he has to call upon the aid of his anime loving professional friends who aren\'t so keen on the choice of his main heroine.',
+    overview: 'Some overview',
     popularity: 63.749,
     posterPath: '/GP7I1yKTp6giJz2fdy0LBWo4zV.jpg',
     status: 'Ended',
@@ -60,6 +50,7 @@ void main() {
     voteAverage: 6.7,
     voteCount: 68,
   );
+
   final tTvList = <Tv>[
     Tv(
       adult: false,
@@ -81,20 +72,16 @@ void main() {
     mockGetTvDetail = MockGetTvDetail();
     mockGetTvRecommendations = MockGetTvRecommendations();
     mockGetWatchlistStatusTvs = MockGetWatchlistStatusTvs();
-    mockSaveWatchlistTvs = MockSaveWatchlistTvs();
-    mockRemoveWatchlistTvs = MockRemoveWatchlistTvs();
-    cubit = TvDetailCubit(
+    tvDetailCubit = TvDetailCubit(
       getTvDetail: mockGetTvDetail,
       getTvRecommendations: mockGetTvRecommendations,
       getWatchListStatus: mockGetWatchlistStatusTvs,
-      saveWatchlist: mockSaveWatchlistTvs,
-      removeWatchlist: mockRemoveWatchlistTvs,
     );
   });
 
   group('TvDetailCubit', () {
     blocTest<TvDetailCubit, TvDetailState>(
-      'should emit [TvDetailLoading, TvDetailLoaded] when fetching tv details is successful',
+      'emits [TvDetailLoading, TvDetailLoaded] on successful data fetch',
       build: () {
         when(mockGetTvDetail.execute(tTvId))
             .thenAnswer((_) async => Right(tTvDetail));
@@ -102,7 +89,7 @@ void main() {
             .thenAnswer((_) async => Right(tTvList));
         when(mockGetWatchlistStatusTvs.execute(tTvId))
             .thenAnswer((_) async => false);
-        return cubit;
+        return tvDetailCubit;
       },
       act: (cubit) async => await cubit.fetchTvDetail(tTvId),
       expect: () => [
@@ -112,16 +99,55 @@ void main() {
     );
 
     blocTest<TvDetailCubit, TvDetailState>(
-      'should emit [TvDetailWatchlistStatus] when loading watchlist status',
+      'emits [TvDetailLoading, TvDetailError] when TV details fetch fails',
       build: () {
+        when(mockGetTvDetail.execute(tTvId)).thenAnswer(
+            (_) async => Left(ServerFailure('Failed to fetch movie detail')));
+        when(mockGetTvRecommendations.execute(tTvId))
+            .thenAnswer((_) async => Right([]));
         when(mockGetWatchlistStatusTvs.execute(tTvId))
             .thenAnswer((_) async => true);
-        return cubit;
+        return tvDetailCubit;
       },
-      act: (cubit) async => await cubit.loadWatchlistStatus(tTvId),
+      act: (cubit) async => await cubit.fetchTvDetail(tTvId),
       expect: () => [
-        TvDetailWatchlistStatus(true, ''),
+        TvDetailLoading(),
+        TvDetailError('Failed to fetch movie detail'),
       ],
+    );
+
+    blocTest<TvDetailCubit, TvDetailState>(
+      'emits [TvDetailLoading, TvDetailError] when TV recommendations fetch fails',
+      build: () {
+        when(mockGetTvDetail.execute(tTvId))
+            .thenAnswer((_) async => Right(tTvDetail));
+        when(mockGetTvRecommendations.execute(tTvId)).thenAnswer(
+            (_) async => Left(ServerFailure('Recommendations error')));
+        when(mockGetWatchlistStatusTvs.execute(tTvId))
+            .thenAnswer((_) async => false);
+        return tvDetailCubit;
+      },
+      act: (cubit) async => await cubit.fetchTvDetail(tTvId),
+      expect: () => [
+        TvDetailLoading(),
+        TvDetailLoaded(tTvDetail, [], false),
+      ],
+    );
+
+    blocTest<TvDetailCubit, TvDetailState>(
+      'emits [TvDetailLoading, TvDetailError] when watchlist status fetch fails',
+      build: () {
+        when(mockGetTvDetail.execute(tTvId))
+            .thenAnswer((_) async => Right(tTvDetail));
+        when(mockGetTvRecommendations.execute(tTvId)).thenAnswer(
+            (_) async => Right(tTvList)); // Mock successful recommendations
+        when(mockGetWatchlistStatusTvs.execute(tTvId))
+            .thenAnswer((_) async => false); // Mock failure for watchlist
+        return tvDetailCubit;
+      },
+      act: (cubit) async => await cubit.fetchTvDetail(tTvId),
+      expect: () =>
+          [TvDetailLoading(), TvDetailLoaded(tTvDetail, tTvList, false)],
     );
   });
 }

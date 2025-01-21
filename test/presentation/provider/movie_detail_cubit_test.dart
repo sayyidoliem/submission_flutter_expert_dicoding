@@ -7,8 +7,6 @@ import 'package:ditonton/feature/movie/domain/entities/movie_genre.dart';
 import 'package:ditonton/feature/movie/domain/usecases/get_movie_detail.dart';
 import 'package:ditonton/feature/movie/domain/usecases/get_movie_recommendations.dart';
 import 'package:ditonton/feature/movie/domain/usecases/get_watchlist_status_movies.dart';
-import 'package:ditonton/feature/movie/domain/usecases/remove_watchlist_movies.dart';
-import 'package:ditonton/feature/movie/domain/usecases/save_watchlist_movies.dart';
 import 'package:ditonton/feature/movie/presentation/provider/movie_detail_cubit/movie_detail_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -20,29 +18,21 @@ import 'movie_detail_cubit_test.mocks.dart';
   GetMovieDetail,
   GetMovieRecommendations,
   GetWatchListStatusMovies,
-  SaveWatchlistMovies,
-  RemoveWatchlistMovies
 ])
 void main() {
-  late MovieDetailCubit cubit;
+  late MovieDetailCubit movieDetailCubit;
   late MockGetMovieDetail mockGetMovieDetail;
   late MockGetMovieRecommendations mockGetMovieRecommendations;
   late MockGetWatchListStatusMovies mockGetWatchListStatus;
-  late MockSaveWatchlistMovies mockSaveWatchlist;
-  late MockRemoveWatchlistMovies mockRemoveWatchlist;
 
   setUp(() {
     mockGetMovieDetail = MockGetMovieDetail();
     mockGetMovieRecommendations = MockGetMovieRecommendations();
     mockGetWatchListStatus = MockGetWatchListStatusMovies();
-    mockSaveWatchlist = MockSaveWatchlistMovies();
-    mockRemoveWatchlist = MockRemoveWatchlistMovies();
-    cubit = MovieDetailCubit(
+    movieDetailCubit = MovieDetailCubit(
       getMovieDetail: mockGetMovieDetail,
       getMovieRecommendations: mockGetMovieRecommendations,
       getWatchListStatus: mockGetWatchListStatus,
-      saveWatchlist: mockSaveWatchlist,
-      removeWatchlist: mockRemoveWatchlist,
     );
   });
 
@@ -93,8 +83,7 @@ void main() {
             .thenAnswer((_) async => Right(tMovieList));
         when(mockGetWatchListStatus.execute(tMovieId))
             .thenAnswer((_) async => true);
-
-        return cubit;
+        return movieDetailCubit;
       },
       act: (cubit) async => await cubit.fetchMovieDetail(tMovieId),
       expect: () => [
@@ -112,8 +101,7 @@ void main() {
             .thenAnswer((_) async => Right([]));
         when(mockGetWatchListStatus.execute(tMovieId))
             .thenAnswer((_) async => true);
-
-        return cubit;
+        return movieDetailCubit;
       },
       act: (cubit) async => await cubit.fetchMovieDetail(tMovieId),
       expect: () => [
@@ -123,34 +111,56 @@ void main() {
     );
 
     blocTest<MovieDetailCubit, MovieDetailState>(
-      'should emit [WatchlistStatusState(true)] when adding to watchlist is successful',
+      'should emit [MovieDetailLoaded] and watchlist added message when movie is added to watchlist',
       build: () {
-        when(mockSaveWatchlist.execute(tMovieDetail))
-            .thenAnswer((_) async => Right('Added to watchlist'));
+        when(mockGetMovieDetail.execute(tMovieId))
+            .thenAnswer((_) async => Right(tMovieDetail));
+        when(mockGetMovieRecommendations.execute(tMovieId))
+            .thenAnswer((_) async => Right(tMovieList));
         when(mockGetWatchListStatus.execute(tMovieId))
             .thenAnswer((_) async => true);
-        return cubit;
+        return movieDetailCubit;
       },
-      act: (cubit) async => await cubit.addWatchlist(tMovieDetail),
+      act: (cubit) async => await cubit.fetchMovieDetail(tMovieId),
       expect: () => [
-        WatchlistStatusState(true, ''),
-        WatchlistStatusState(true, 'Added to watchlist'),
+        MovieDetailLoading(),
+        MovieDetailLoaded(tMovieDetail, tMovieList, true),
       ],
     );
 
     blocTest<MovieDetailCubit, MovieDetailState>(
-      'should emit [WatchlistStatusState(false)] when removing from watchlist is successful',
+      'should emit MovieDetailError when add to watchlist fails',
       build: () {
-        when(mockRemoveWatchlist.execute(tMovieDetail))
-            .thenAnswer((_) async => Right('Removed from watchlist'));
+        when(mockGetMovieDetail.execute(tMovieId))
+            .thenAnswer((_) async => Right(tMovieDetail));
+        when(mockGetMovieRecommendations.execute(tMovieId))
+            .thenAnswer((_) async => Right(tMovieList));
         when(mockGetWatchListStatus.execute(tMovieId))
             .thenAnswer((_) async => false);
-        return cubit;
+        return movieDetailCubit;
       },
-      act: (cubit) async => await cubit.removeFromWatchlist(tMovieDetail),
+      act: (cubit) async => await cubit.fetchMovieDetail(tMovieId),
       expect: () => [
-        WatchlistStatusState(false, ''),
-        WatchlistStatusState(false, 'Removed from watchlist'),
+        MovieDetailLoading(),
+        MovieDetailLoaded(tMovieDetail, tMovieList, false),
+      ],
+    );
+
+    blocTest<MovieDetailCubit, MovieDetailState>(
+      'should emit MovieDetailLoaded when movie is removed from watchlist',
+      build: () {
+        when(mockGetMovieDetail.execute(tMovieId))
+            .thenAnswer((_) async => Right(tMovieDetail));
+        when(mockGetMovieRecommendations.execute(tMovieId))
+            .thenAnswer((_) async => Right(tMovieList));
+        when(mockGetWatchListStatus.execute(tMovieId))
+            .thenAnswer((_) async => false);
+        return movieDetailCubit;
+      },
+      act: (cubit) async => await cubit.fetchMovieDetail(tMovieId),
+      expect: () => [
+        MovieDetailLoading(),
+        MovieDetailLoaded(tMovieDetail, tMovieList, false),
       ],
     );
   });
