@@ -66,102 +66,105 @@ class DetailContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    return Stack(
-      children: [
-        CachedNetworkImage(
-          imageUrl: 'https://image.tmdb.org/t/p/w500${tv.posterPath}',
-          width: screenWidth,
-          placeholder: (context, url) => Center(
-            child: CircularProgressIndicator(),
+    return BlocListener<WatchlistTvCubit, WatchlistTvState>(
+      listener: (context, state) {
+        if (state is TvWatchlistStatusState) {
+                  ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(state.message)));
+        }
+
+      },
+      child: Stack(
+        children: [
+          CachedNetworkImage(
+            imageUrl: 'https://image.tmdb.org/t/p/w500${tv.posterPath}',
+            width: screenWidth,
+            placeholder: (context, url) => Center(
+              child: CircularProgressIndicator(),
+            ),
+            errorWidget: (context, url, error) => Icon(Icons.error),
           ),
-          errorWidget: (context, url, error) => Icon(Icons.error),
-        ),
-        Container(
-          margin: const EdgeInsets.only(top: 56),
-          child: DraggableScrollableSheet(
-            builder: (context, scrollController) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: kRichBlack,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(tv.name ?? 'title', style: kHeading5),
-                      FilledButton(
-                        onPressed: () async {
-                          final cubit = context.read<WatchlistTvCubit>();
-                          if (!isAddedWatchlist) {
-                            await cubit.addWatchlist(tv);
-                          } else {
-                            await cubit.removeFromWatchlist(tv);
-                          }
-
-                          final message = cubit.state is TvDetailWatchlistStatus
-                              ? (cubit.state as TvDetailWatchlistStatus).message
-                              : 'Action Failed';
-
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(SnackBar(content: Text(message)));
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+          Container(
+            margin: const EdgeInsets.only(top: 56),
+            child: DraggableScrollableSheet(
+              builder: (context, scrollController) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: kRichBlack,
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(16)),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(tv.name ?? 'title', style: kHeading5),
+                        FilledButton(
+                          onPressed: () async {
+                            final cubit = context.read<WatchlistTvCubit>();
+                            if (!isAddedWatchlist) {
+                              await cubit.addWatchlist(tv);
+                            } else {
+                              await cubit.removeFromWatchlist(tv);
+                            }
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              isAddedWatchlist
+                                  ? Icon(Icons.check)
+                                  : Icon(Icons.add),
+                              Text('Watchlist'),
+                            ],
+                          ),
+                        ),
+                        Text(_showGenres(tv.genres)),
+                        Row(
                           children: [
-                            isAddedWatchlist
-                                ? Icon(Icons.check)
-                                : Icon(Icons.add),
-                            Text('Watchlist'),
+                            RatingBarIndicator(
+                              rating: tv.voteAverage ?? 0 / 2,
+                              itemCount: 5,
+                              itemBuilder: (context, index) => Icon(
+                                Icons.star,
+                                color: kMikadoYellow,
+                              ),
+                              itemSize: 24,
+                            ),
+                            Text('${tv.voteAverage}')
                           ],
                         ),
-                      ),
-                      Text(_showGenres(tv.genres)),
-                      Row(
-                        children: [
-                          RatingBarIndicator(
-                            rating: tv.voteAverage ?? 0 / 2,
-                            itemCount: 5,
-                            itemBuilder: (context, index) => Icon(
-                              Icons.star,
-                              color: kMikadoYellow,
-                            ),
-                            itemSize: 24,
-                          ),
-                          Text('${tv.voteAverage}')
-                        ],
-                      ),
-                      SizedBox(height: 16),
-                      Text('Overview', style: kHeading6),
-                      Text(tv.overview ?? 'overview'),
-                      SizedBox(height: 16),
-                      Text('Recommendations', style: kHeading6),
-                      _buildRecommendations(context),
-                    ],
+                        SizedBox(height: 16),
+                        Text('Overview', style: kHeading6),
+                        Text(tv.overview ?? 'overview'),
+                        SizedBox(height: 16),
+                        Text('Recommendations', style: kHeading6),
+                        _buildRecommendations(context),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-            minChildSize: 0.25,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircleAvatar(
-            backgroundColor: kRichBlack,
-            foregroundColor: Colors.white,
-            child: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context);
+                );
               },
+              minChildSize: 0.25,
             ),
           ),
-        ),
-      ],
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              backgroundColor: kRichBlack,
+              foregroundColor: Colors.white,
+              child: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

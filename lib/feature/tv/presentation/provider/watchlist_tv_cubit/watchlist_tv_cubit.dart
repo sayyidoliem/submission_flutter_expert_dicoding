@@ -63,6 +63,6 @@ class WatchlistTvCubit extends Cubit<WatchlistTvState> {
 
   Future<void> loadWatchlistStatus(int id) async {
     final result = await getWatchListStatus.execute(id);
-    emit(TvDetailWatchlistStatus(result, ''));
+    emit(TvWatchlistStatusState(result, ''));
   }
 }

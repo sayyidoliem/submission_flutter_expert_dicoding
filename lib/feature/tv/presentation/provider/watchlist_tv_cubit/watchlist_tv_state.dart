@@ -28,11 +28,11 @@ final class TvDetailWatchlistUpdated extends WatchlistTvState {
   List<Object> get props => [message];
 }
 
-final class TvDetailWatchlistStatus extends WatchlistTvState {
+final class TvWatchlistStatusState extends WatchlistTvState {
   final bool isAddedToWatchlist;
   final String message;
 
-  TvDetailWatchlistStatus(this.isAddedToWatchlist, this.message);
+  TvWatchlistStatusState(this.isAddedToWatchlist, this.message);
 
   List<Object> get props => [isAddedToWatchlist, message];
 }

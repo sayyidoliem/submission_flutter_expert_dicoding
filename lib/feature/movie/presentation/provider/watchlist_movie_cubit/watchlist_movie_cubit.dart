@@ -41,8 +41,7 @@ class WatchlistMoviesCubit extends Cubit<WatchlistMoviesState> {
       (successMessage) => message = successMessage,
     );
 
-    await loadWatchlistStatus(movie.id);
-    emit(WatchlistStatusState(true, message ?? ''));
+    emit(MovieWatchlistStatusState(true, message ?? ''));
   }
 
   Future<void> removeFromWatchlist(MovieDetail movie) async {
@@ -54,12 +53,11 @@ class WatchlistMoviesCubit extends Cubit<WatchlistMoviesState> {
       (successMessage) => message = successMessage,
     );
 
-    await loadWatchlistStatus(movie.id);
-    emit(WatchlistStatusState(false, message ?? ''));
+    emit(MovieWatchlistStatusState(false, message ?? ''));
   }
 
   Future<void> loadWatchlistStatus(int id) async {
     final result = await getWatchListStatus.execute(id);
-    emit(WatchlistStatusState(result, ''));
+    emit(MovieWatchlistStatusState(result, ''));
   }
 }
