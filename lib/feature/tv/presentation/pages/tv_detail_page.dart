@@ -43,7 +43,6 @@ class _TvDetailPageState extends State<TvDetailPage> {
               child: DetailContent(
                 state.tv,
                 state.recommendations,
-                state.isAddedToWatchlist,
               ),
             );
           } else if (state is TvDetailError) {
@@ -59,23 +58,26 @@ class _TvDetailPageState extends State<TvDetailPage> {
 class DetailContent extends StatelessWidget {
   final TvDetail tv;
   final List<Tv> recommendations;
-  final bool isAddedWatchlist;
 
-  DetailContent(this.tv, this.recommendations, this.isAddedWatchlist);
+  DetailContent(
+    this.tv,
+    this.recommendations,
+  );
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    return BlocListener<WatchlistTvCubit, WatchlistTvState>(
+    return BlocConsumer<WatchlistTvCubit, WatchlistTvState>(
       listener: (context, state) {
-        if (state is TvWatchlistStatusState) {
-                  ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(state.message)));
+        if (state is TvWatchlistStatusState && state.message.isNotEmpty) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(state.message)));
         }
-
       },
-      child: Stack(
-        children: [
+      builder: (BuildContext context, state) {
+        final isAddedWatchlist =
+            state is TvWatchlistStatusState && state.isAddedToWatchlist;
+        return Stack(children: [
           CachedNetworkImage(
             imageUrl: 'https://image.tmdb.org/t/p/w500${tv.posterPath}',
             width: screenWidth,
@@ -163,8 +165,8 @@ class DetailContent extends StatelessWidget {
               ),
             ),
           ),
-        ],
-      ),
+        ]);
+      },
     );
   }
 
