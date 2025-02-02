@@ -19,3 +19,20 @@ class WatchlistTvError extends WatchlistTvState {
 
   WatchlistTvError(this.message);
 }
+
+final class TvDetailWatchlistUpdated extends WatchlistTvState {
+  final String message;
+
+  TvDetailWatchlistUpdated(this.message);
+
+  List<Object> get props => [message];
+}
+
+final class TvWatchlistStatusState extends WatchlistTvState {
+  final bool isAddedToWatchlist;
+  final String message;
+
+  TvWatchlistStatusState(this.isAddedToWatchlist, this.message);
+
+  List<Object> get props => [isAddedToWatchlist, message];
+}

@@ -42,13 +42,3 @@ final class MovieDetailError extends MovieDetailState {
   @override
   List<Object> get props => [message];
 }
-
-final class WatchlistStatusState extends MovieDetailState {
-  final bool isAddedToWatchlist;
-  final String message;
-
-  WatchlistStatusState(this.isAddedToWatchlist, this.message);
-
-  @override
-  List<Object> get props => [isAddedToWatchlist, message];
-}

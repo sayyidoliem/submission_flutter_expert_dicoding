@@ -9,28 +9,28 @@ class TvListInitial extends TvListState {}
 
 class TvListLoading extends TvListState {}
 
-class NowPlayingTvsLoaded extends TvListState {
+class NowPlayingTvListLoaded extends TvListState {
   final List<Tv> nowPlayingTvs;
 
-  NowPlayingTvsLoaded(this.nowPlayingTvs);
+  NowPlayingTvListLoaded(this.nowPlayingTvs);
 
   @override
   List<Object> get props => [nowPlayingTvs];
 }
 
-class PopularTvsLoaded extends TvListState {
+class PopularTvListLoaded extends TvListState {
   final List<Tv> popularTvs;
 
-  PopularTvsLoaded(this.popularTvs);
+  PopularTvListLoaded(this.popularTvs);
 
   @override
   List<Object> get props => [popularTvs];
 }
 
-class TopRatedTvsLoaded extends TvListState {
+class TopRatedTvListLoaded extends TvListState {
   final List<Tv> topRatedTvs;
 
-  TopRatedTvsLoaded(this.topRatedTvs);
+  TopRatedTvListLoaded(this.topRatedTvs);
 
   @override
   List<Object> get props => [topRatedTvs];

@@ -14,7 +14,7 @@ class PopularMoviesCubit extends Cubit<PopularMoviesState> {
     emit(PopularMoviesLoading());
 
     final result = await getPopularMovies.execute();
-    
+
     result.fold(
       (failure) {
         emit(PopularMoviesError(failure.message));

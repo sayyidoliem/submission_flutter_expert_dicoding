@@ -1,11 +1,14 @@
 plugins {
-    id "com.dicoding.ditonton" 
+    id "com.android.application"
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
-    id 'com.google.gms.google-services' 
-    id 'com.google.firebase.crashlytics'
+    id 'com.google.gms.google-services'
+    // id 'com.google.firebase.crashlytics'
 }
+
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file("local.properties")
@@ -26,7 +29,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace = "com.olim.ditonton"
+    namespace = "com.dicoding.ditonton"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -37,13 +40,14 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.olim.ditonton"
+        applicationId = "com.dicoding.ditonton"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -52,6 +56,10 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.debug
         }
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"  // Set the JVM target to 1.8
     }
 }
 
